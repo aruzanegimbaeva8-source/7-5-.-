@@ -1,0 +1,828 @@
+<!DOCTYPE html>
+<html lang="kk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>№5 зертханалық жұмыс — Өткізгіштерді тізбектей қосу</title>
+<style>
+:root{
+  --bg:#f4f7fb; --card:#fff; --text:#182230; --muted:#607084;
+  --primary:#2563eb; --primary2:#1d4ed8; --green:#16a34a; --orange:#ea580c;
+  --border:#dbe3ee; --shadow:0 8px 28px rgba(30,50,80,.08); --radius:18px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+background:var(--bg);color:var(--text);line-height:1.55}
+.container{width:min(1180px,92%);margin:auto}
+header{background:linear-gradient(135deg,#173b78,#2563eb);color:white;padding:42px 0 34px}
+header .tag{display:inline-block;background:rgba(255,255,255,.16);padding:6px 12px;border-radius:999px;font-size:14px;margin-bottom:12px}
+h1{font-size:clamp(28px,4vw,46px);line-height:1.12;margin:0 0 12px}
+header p{margin:0;max-width:850px;color:#e5edff;font-size:17px}
+nav{position:sticky;top:0;z-index:20;background:rgba(255,255,255,.94);backdrop-filter:blur(10px);border-bottom:1px solid var(--border)}
+nav .container{display:flex;gap:7px;overflow:auto;padding:9px 0}
+nav a{white-space:nowrap;text-decoration:none;color:#40536a;font-size:13px;padding:7px 10px;border-radius:9px}
+nav a:hover{background:#edf3ff;color:var(--primary)}
+main{padding:28px 0 60px}
+section{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:26px;margin-bottom:22px}
+h2{margin:0 0 16px;font-size:25px}
+h3{margin:20px 0 10px;font-size:18px}
+.badge{display:inline-block;background:#eaf1ff;color:#1d4ed8;border-radius:999px;padding:4px 10px;font-size:12px;font-weight:700}
+.lead{font-size:17px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+@media(max-width:760px){.grid,.grid3{grid-template-columns:1fr}section{padding:20px}}
+.card{border:1px solid var(--border);border-radius:14px;padding:16px;background:#fbfcfe}
+ul,ol{padding-left:22px}
+li{margin:7px 0}
+.formula{background:#f6f8fc;border-left:4px solid var(--primary);padding:13px 16px;border-radius:8px;margin:9px 0;font-family:Georgia,serif;font-size:18px}
+.highlight{background:#eff6ff;border:1px solid #bfdbfe;border-radius:12px;padding:16px}
+.warning{background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:16px}
+.success{background:#f0fdf4;border:1px solid #bbf7d0;border-radius:12px;padding:16px}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:14px}
+th,td{border:1px solid var(--border);padding:9px;text-align:center}
+th{background:#f1f5f9;font-weight:700}
+td input{width:100%;border:1px solid #cbd5e1;border-radius:7px;padding:7px;text-align:center}
+.lab{background:linear-gradient(180deg,#f8fbff,#fff)}
+.controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}
+@media(max-width:760px){.controls{grid-template-columns:1fr}}
+.control{border:1px solid var(--border);border-radius:14px;padding:15px;background:#fff}
+.control label{display:flex;justify-content:space-between;font-weight:700;margin-bottom:8px}
+.control output{color:var(--primary);font-size:18px}
+input[type=range]{width:100%;accent-color:var(--primary)}
+.number{width:90px;padding:7px;border:1px solid #cbd5e1;border-radius:8px}
+.results{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:18px}
+@media(max-width:850px){.results{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:480px){.results{grid-template-columns:1fr 1fr}}
+.metric{padding:14px;border-radius:12px;background:#f8fafc;border:1px solid var(--border)}
+.metric small{display:block;color:var(--muted);font-size:12px}
+.metric strong{display:block;font-size:23px;margin-top:3px}
+.metric.blue{border-color:#bfdbfe;background:#eff6ff}
+.metric.green{border-color:#bbf7d0;background:#f0fdf4}
+.metric.orange{border-color:#fed7aa;background:#fff7ed}
+.circuit-wrap{background:#07111f;border-radius:16px;padding:12px;overflow:hidden}
+svg{display:block;width:100%;height:auto}
+.resistor{fill:#f8fafc;stroke:#2563eb;stroke-width:3}
+.wire{stroke:#8bd1ff;stroke-width:5;fill:none;stroke-linecap:round}
+.current{stroke:#facc15;stroke-width:3;fill:none;stroke-dasharray:10 8;animation:flow 1s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-18}}
+.battery{stroke:#f8fafc;stroke-width:4}
+.bulb{fill:#fde68a;stroke:#f59e0b;stroke-width:3}
+.svgtext{fill:white;font-size:16px;font-weight:700}
+.svgsub{fill:#cbd5e1;font-size:13px}
+canvas{width:100%;height:320px;border:1px solid var(--border);border-radius:14px;background:white}
+button{border:0;border-radius:10px;padding:10px 15px;background:var(--primary);color:#fff;font-weight:700;cursor:pointer}
+button:hover{background:var(--primary2)}
+button.secondary{background:#e8eef8;color:#26384d}
+button.danger{background:#fee2e2;color:#991b1b}
+.btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+@media(max-width:760px){.compare{grid-template-columns:1fr}}
+.compare .box{border-radius:14px;padding:18px;border:1px solid var(--border)}
+.compare .model{background:#eff6ff;border-color:#bfdbfe}
+.compare .real{background:#f0fdf4;border-color:#bbf7d0}
+.error{color:#b91c1c;font-weight:700}
+footer{text-align:center;color:var(--muted);padding:18px}
+.small{font-size:13px;color:var(--muted)}
+.mono{font-family:ui-monospace,SFMono-Regular,Menlo,monospace}
+
+.language-tools{position:absolute;right:4%;top:16px;display:flex;gap:8px;align-items:center;z-index:3}
+.language-tools select,.language-tools button{padding:8px 10px;border-radius:9px;border:1px solid #cbd5e1;background:white;color:#182230}
+header{position:relative;padding-top:58px}
+body.contrast{--bg:#000;--card:#101010;--text:#fff;--muted:#f0f0f0;--primary:#ffeb00;--primary2:#fff;--border:#fff;--shadow:none}
+body.contrast header{background:#000;border-bottom:3px solid #ffeb00;color:#ffeb00}
+body.contrast header p{color:#fff} body.contrast nav{background:#111} body.contrast nav a{color:#fff}
+body.warm{--bg:#fff8e8;--card:#fffdf7;--text:#352400;--muted:#6a5530;--primary:#7c3aed;--primary2:#5b21b6;--border:#e8d7b0}
+body.cool{--bg:#edf8ff;--card:#fff;--text:#123047;--muted:#45677d;--primary:#006d77;--primary2:#004f56;--border:#c4e1e8}
+body.large-text{zoom:1.12} body.large-text nav a{font-size:16px} body.large-text .small{font-size:16px}
+.charge-legend{display:flex;align-items:center;gap:8px}.charge-swatch{color:#facc15;background:#07111f;padding:2px 8px;border-radius:4px;font-weight:900;letter-spacing:2px}.legend-blue{color:#2563eb;font-weight:900}.legend-red{color:#dc2626;font-weight:900}
+.palette{display:flex;gap:9px;flex-wrap:wrap;margin:12px 0}.part{background:#f8fafc;color:#182230;border:1px solid #94a3b8;border-radius:12px;padding:12px;min-width:105px;text-align:center;cursor:pointer}.part .symbol{display:block;font-size:25px;font-weight:800}.part.selected{outline:3px solid var(--primary)}
+.builder{background:#07111f;color:white;border-radius:16px;padding:16px;min-height:160px}.built-parts{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.built-part{background:#182a40;border:2px solid #8bd1ff;border-radius:12px;padding:14px 10px;min-width:100px;text-align:center;cursor:pointer}.built-part:hover{border-color:#facc15}.built-part small{display:block;color:#cbd5e1}.flow-note{color:#fde047;margin-top:12px;min-height:24px}.conclusion{width:100%;min-height:130px;padding:12px;border:1px solid #cbd5e1;border-radius:10px;font:inherit}
+#studentInfo input{width:100%;padding:11px;border:1px solid #cbd5e1;border-radius:9px;font:inherit;margin:6px 0 12px}
+body.work-locked input:not([type=range]),body.work-locked textarea,body.work-locked .part,body.work-locked #builtParts button,body.work-locked #checkCircuit,body.work-locked #resetCircuit,body.work-locked #fillExample,body.work-locked #clearTable,body.work-locked #saveWork{pointer-events:none;opacity:.75}
+body.work-locked input,body.work-locked textarea{background:#eef2f7;color:#475569}
+@media(max-width:600px){.language-tools{top:8px;right:4%;}.language-tools select{max-width:105px}header{padding-top:70px}}
+</style>
+</head>
+<body>
+
+<header>
+<div class="language-tools" aria-label="Тіл және қолжетімділік">
+<label for="language" style="color:#182230;background:white;padding:5px;border-radius:7px">🌐</label>
+<select id="language" aria-label="Choose language"><option value="kk">Қазақша</option><option value="ru">Русский</option><option value="en">English</option></select>
+<select id="themeChoice" aria-label="Түстер тақырыбы"><option value="default">🎨 Қалыпты</option><option value="contrast">◐ Жоғары контраст</option><option value="warm">Жылы түстер</option><option value="cool">Суық түстер</option></select>
+<button id="largeText" type="button" aria-label="Үлкен мәтін">A+</button>
+</div>
+<div class="container">
+  <span class="tag">5-топ • №5 зертханалық жұмыс</span>
+  <h1>Өткізгіштерді тізбектей қосуды зерделеу</h1>
+  <p>Тізбектей жалғанған екі резистордың жалпы кедергісін, ток күшін және кернеудің бөлінуін интерактивті модель арқылы зерттеу.</p>
+</div>
+</header>
+
+<nav><div class="container">
+<a href="#question">1. Зерттеу сұрағы</a><a href="#goal">2. Мақсат пен міндеттер</a><a href="#hypothesis">3. Гипотеза</a><a href="#variables">4. Шамалар</a><a href="#safety">5. Қауіпсіздік</a><a href="#procedure">6. Жұмыс жоспары</a><a href="#setup">7. Құралдар</a><a href="#model">8. Модель</a><a href="#table">9. Кесте</a><a href="#compare">10. Салыстыру</a><a href="#results">11. График</a><a href="#conclusion">12. Қорытынды</a>
+</div></nav>
+
+<main class="container">
+
+<section id="question">
+<h2>1. Зерттеу сұрағы</h2>
+<p class="lead"><b>Екі өткізгішті тізбектей қосқанда олардың кедергі мәндері мен ток көзінің кернеуін өзгерту тізбектегі жалпы кедергіге, ток күшіне және әр өткізгіштегі кернеуге қалай әсер етеді?</b></p>
+</section>
+
+<section id="goal">
+<h2>2. Зерттеудің мақсаты мен міндеттері</h2>
+<div class="highlight"><b>Мақсат:</b> екі өткізгішті тізбектей қосу кезінде жалпы кедергіні, ток күшін және әр өткізгіштегі кернеуді тәжірибе және интерактивті модель арқылы зерттеу.</div>
+<h3>Міндеттері</h3>
+<ol>
+<li>Тізбектей жалғанған өткізгіштердің негізгі физикалық заңдылықтарын қарастыру.</li>
+<li><span class="mono">R₁</span>, <span class="mono">R₂</span> және <span class="mono">U</span> мәндерін өзгертіп, ток күші мен кернеулерді бақылау.</li>
+<li>Жалпы кедергіні теориялық формуламен есептеу және нәтижемен салыстыру.</li>
+<li>Модельдің болжамын нақты тәжірибеде өлшенген мәндермен салыстыру.</li>
+<li>Алынған деректер бойынша график тұрғызу және қорытынды жасау.</li>
+</ol>
+</section>
+
+<section id="hypothesis">
+<h2>3. Гипотеза және физикалық негіздеме</h2>
+<div class="success"><b>Егер</b> екі өткізгіш тізбектей қосылып, олардың кедергілері мен ток көзінің кернеуі өзгертілсе, <b>онда</b> барлық бөліктердегі ток күші бірдей болып, жалпы кедергі кедергілердің қосындысына тең болады, ал кернеу кедергілерге пропорционал бөлінеді, <b>себебі</b> тізбектей қосылған тізбекте бірдей ток өтеді және Ом заңы орындалады.</div>
+<h3>Негізгі формулалар</h3>
+<div class="grid">
+<div>
+<div class="formula">R<sub>жалпы</sub> = R₁ + R₂</div>
+<div class="formula">I<sub>жалпы</sub> = I₁ = I₂</div>
+<div class="formula">I<sub>жалпы</sub> = U<sub>жалпы</sub> / R<sub>жалпы</sub></div>
+</div>
+<div>
+<div class="formula">U₁ = I<sub>жалпы</sub> · R₁</div>
+<div class="formula">U₂ = I<sub>жалпы</sub> · R₂</div>
+<div class="formula">U<sub>жалпы</sub> = U₁ + U₂</div>
+</div>
+</div>
+<div class="formula">U₁ / U₂ = R₁ / R₂</div>
+<p><b>Қорытынды болжам:</b> кедергісі үлкен резисторда кернеудің түсуі де үлкен болады.</p>
+</section>
+
+<section id="variables">
+<h2>4. Тәуелсіз, тәуелді және тұрақты шамалар</h2>
+<table>
+<tr><th>Шама</th><th>Түрі</th><th>Белгіленуі</th></tr>
+<tr><td>1-резистор кедергісі</td><td>Тәуелсіз</td><td>R₁, Ом</td></tr>
+<tr><td>2-резистор кедергісі</td><td>Тәуелсіз</td><td>R₂, Ом</td></tr>
+<tr><td>Ток көзінің кернеуі</td><td>Тәуелсіз</td><td>U, В</td></tr>
+<tr><td>Жалпы кедергі</td><td>Тәуелді</td><td>R<sub>жалпы</sub>, Ом</td></tr>
+<tr><td>Ток күші</td><td>Тәуелді</td><td>I, А</td></tr>
+<tr><td>Резисторлардағы кернеулер</td><td>Тәуелді</td><td>U₁, U₂, В</td></tr>
+<tr><td>Қосылу түрі</td><td>Тұрақты</td><td>Тізбектей</td></tr>
+<tr><td>Өткізгіштердің түрі</td><td>Тұрақты</td><td>Резисторлар</td></tr>
+</table>
+</section>
+
+<section id="setup"><h2>7. Құралдар және қондырғы сызбасы</h2>
+<p>Қажетті құралды таңдаңыз, содан кейін төмендегі жұмыс алаңына басып қосыңыз. Құралды бассаңыз, атауы мен қызметі көрсетіледі.</p>
+<div class="palette" id="partPalette">
+<button class="part" data-part="battery"><span class="symbol">🔋</span>Ток көзі</button><button class="part" data-part="switch"><span class="symbol">⏻</span>Қосқыш</button><button class="part" data-part="ammeter"><span class="symbol">Ⓐ</span>Амперметр</button><button class="part" data-part="r1"><span class="symbol">▱</span>Резистор R₁</button><button class="part" data-part="r2"><span class="symbol">▱</span>Резистор R₂</button><button class="part" data-part="voltmeter"><span class="symbol">Ⓥ</span>Вольтметр</button><button class="part" data-part="wire"><span class="symbol">〰</span>Жалғаушы сым</button>
+</div><div class="builder"><b>Схеманы құрастыру алаңы</b><div class="built-parts" id="builtParts"><span>Құралдарды жоғарыдан таңдаңыз.</span></div><div class="flow-note" id="partInfo" aria-live="polite">Құралды таңдағанда оның атауы мен қызметі осында шығады.</div></div>
+<div class="btns"><button id="checkCircuit" type="button">Схеманы тексеру</button><button id="resetCircuit" type="button" class="secondary">Қайта бастау</button></div><p id="circuitFeedback" class="highlight" aria-live="polite">Дұрыс схема: ток көзі → қосқыш → амперметр → R₁ → R₂ → ток көзі. Вольтметр резисторға параллель жалғанады.</p>
+<div class="card"><h3>Схеманың үлгісі</h3><div class="circuit-wrap"><svg viewBox="0 0 700 240" aria-label="Тізбектей қосылған екі резистор"><path class="wire" d="M80 120 H155 M250 120 H315 M410 120 H620 V190 H80 V120"/><path class="current" d="M80 120 H155 M250 120 H315 M410 120 H620 V190 H80 V120"/><rect x="155" y="92" width="95" height="56" rx="8" class="resistor"/><rect x="315" y="92" width="95" height="56" rx="8" class="resistor"/><text x="188" y="127" class="svgtext">R₁</text><text x="348" y="127" class="svgtext">R₂</text><line x1="75" y1="90" x2="75" y2="150" class="battery"/><line x1="90" y1="102" x2="90" y2="138" class="battery"/><text x="53" y="75" class="svgsub">+</text><text x="53" y="173" class="svgsub">−</text><text x="115" y="205" class="svgsub">Ток көзі</text><text x="505" y="108" class="svgsub">I₁ = I₂ = I</text></svg></div><p class="small">Амперметр тізбекке тізбектей, ал вольтметр әр резисторға параллель қосылады.</p><p class="small charge-legend"><span class="charge-swatch">━━━</span> Сары үзік сызық — өткізгіш бойымен қозғалып, токты тудыратын электр зарядтарының қозғалыс бағыты.</p></div></section>
+
+<section id="procedure">
+<h2>6. Зертханалық жұмысты өткізу жоспары</h2>
+<ol>
+<li>Ток көзін ажыратып, сызба бойынша тізбекті жинаңыз.</li>
+<li>Амперметрді тізбекке тізбектей, вольтметрді өлшенетін резисторға параллель қосыңыз.</li>
+<li><b>R₁</b>, <b>R₂</b> номиналдарын және ток көзінің <b>U</b> кернеуін жазыңыз.</li>
+<li>Тізбекті қосып, амперметрден <b>I</b> мәнін өлшеңіз.</li>
+<li>Бірінші резистордағы <b>U₁</b> және екінші резистордағы <b>U₂</b> кернеулерін өлшеңіз.</li>
+<li>Өлшеулерді кемінде <b>5 түрлі параметрлер жиынтығы</b> үшін қайталаңыз.</li>
+<li>Әр өлшеуде барлық шамалардың өлшем бірліктерін сақтаңыз: Ом, В, А.</li>
+<li>Теориялық жалпы кедергіні <b>R₁ + R₂</b> арқылы есептеңіз.</li>
+<li>Тәжірибелік жалпы кедергіні <b>U / I</b> арқылы есептеңіз.</li>
+<li>Модель болжамын тәжірибелік өлшемдермен салыстырыңыз.</li>
+</ol>
+<div class="warning"><b>Маңызды:</b> төмендегі интерактивті модель нақты электр тізбегінің орнына жүрмейді. Ол теориялық болжамды есептейді. Нақты тәжірибелік мәндерді өлшеу құралдарынан бөлек енгізу қажет.</div>
+</section>
+
+<section id="safety">
+<h2>7. Қауіпсіздік ережелері</h2>
+<ul>
+<li>Тізбекті құрастырғанда ток көзін ажыратыңыз.</li>
+<li>Сымдардың оқшаулауы бүтін екенін тексеріңіз.</li>
+<li>Қысқа тұйықталуға жол бермеңіз.</li>
+<li>Амперметрді параллель қоспаңыз.</li>
+<li>Вольтметрді тізбекке тізбектей қоспаңыз.</li>
+<li>Ток көзінің рұқсат етілген кернеуінен аспаңыз.</li>
+<li>Қосылған тізбектің жалаңаш өткізгіштерін ұстамаңыз.</li>
+<li>Жұмыс аяқталған соң ток көзін ажыратыңыз.</li>
+</ul>
+</section>
+
+<section id="model" class="lab">
+<h2>8. Интерактивті модель</h2>
+<p>Үш параметрді өзгертіңіз. Модель нәтижелерді бірден қайта есептейді.</p>
+
+<div class="controls">
+<div class="control">
+<label for="r1">R₁ <output id="r1Out">10</output> Ом</label>
+<input id="r1" type="range" min="1" max="100" value="10" step="1">
+</div>
+<div class="control">
+<label for="r2">R₂ <output id="r2Out">20</output> Ом</label>
+<input id="r2" type="range" min="1" max="100" value="20" step="1">
+</div>
+<div class="control">
+<label for="voltage">U <output id="uOut">12.0</output> В</label>
+<input id="voltage" type="range" min="1" max="20" value="12" step="0.5">
+</div>
+</div>
+
+<div class="circuit-wrap" style="margin-top:18px">
+<svg id="modelSvg" viewBox="0 0 900 300" aria-label="Интерактивті электр тізбегі">
+<path class="wire" d="M100 145 H215 M335 145 H390 M510 145 H790 V230 H100 V145"/>
+<path id="currentLine" class="current" d="M100 145 H215 M335 145 H390 M510 145 H790 V230 H100 V145"/>
+<rect x="215" y="110" width="120" height="70" rx="10" class="resistor"/>
+<rect x="390" y="110" width="120" height="70" rx="10" class="resistor"/>
+<text x="252" y="152" class="svgtext">R₁</text>
+<text x="427" y="152" class="svgtext">R₂</text>
+<line x1="90" y1="105" x2="90" y2="185" class="battery"/>
+<line x1="112" y1="120" x2="112" y2="170" class="battery"/>
+<text x="72" y="92" class="svgtext">+</text><text x="72" y="207" class="svgtext">−</text>
+<text x="120" y="265" class="svgsub">Ток көзі</text>
+<text id="svgI" x="575" y="125" class="svgsub">I = 0.400 А</text>
+<text id="svgU1" x="235" y="205" class="svgsub">U₁ = 4.00 В</text>
+<text id="svgU2" x="410" y="205" class="svgsub">U₂ = 8.00 В</text>
+<text x="575" y="155" class="svgsub">I₁ = I₂ = I</text>
+</svg>
+</div>
+
+<div class="results">
+<div class="metric blue"><small>Жалпы кедергі</small><strong id="rTotal">30.00 Ом</strong></div>
+<div class="metric green"><small>Тізбектегі ток I</small><strong id="current">0.400 А</strong></div>
+<div class="metric orange"><small>R₁-дегі кернеу U₁</small><strong id="u1">4.00 В</strong></div>
+<div class="metric orange"><small>R₂-дегі кернеу U₂</small><strong id="u2">8.00 В</strong></div>
+</div>
+
+<div class="grid" style="margin-top:16px">
+<div class="card">
+<h3>Автоматты тексеру</h3>
+<p id="checks"></p>
+</div>
+<div class="card">
+<h3>Есептеу</h3>
+<div class="formula">R<sub>жалпы</sub> = R₁ + R₂ = <span id="calcR">30</span> Ом</div>
+<div class="formula">I<sub>жалпы</sub> = U<sub>жалпы</sub> / R<sub>жалпы</sub> = <span id="calcI">0.400</span> А</div>
+<div class="formula">U<sub>жалпы</sub> = U₁ + U₂ = <span id="sumU">12.00</span> В</div>
+</div>
+</div>
+</section>
+
+<section id="results">
+<h2>9. Нәтиже және график</h2>
+<p>График модельдегі ағымдағы <b>U</b> мәні тұрақты деп алып, жалпы кедергі өзгергенде ток күшінің қалай өзгеретінін көрсетеді:</p>
+<canvas id="graph" width="1000" height="420"></canvas><p class="small graph-legend"><span class="legend-blue">━━</span> Көк сызық — теориялық модель &nbsp; <span class="legend-red">●</span> Қызыл нүктелер мен сызық — оқушы кестесіндегі тәжірибелік мәндер</p>
+<p class="small">Теория: I<sub>жалпы</sub> = U<sub>жалпы</sub> / R<sub>жалпы</sub>. Нүкте — қазіргі модель параметрлері.</p>
+</section>
+
+<section id="compare">
+<h2>10. «Модельдің болжамы» және «тәжірибеде өлшенген мән»</h2>
+<div class="compare">
+<div class="box model">
+<h3>🖥️ Модельдің болжамы</h3>
+<table>
+<tr><th>Шама</th><th>Мән</th></tr>
+<tr><td>R<sub>жалпы</sub></td><td id="mR">30.00 Ом</td></tr>
+<tr><td>I</td><td id="mI">0.400 А</td></tr>
+<tr><td>I₁</td><td id="mI1">0.400 А</td></tr>
+<tr><td>I₂</td><td id="mI2">0.400 А</td></tr>
+<tr><td>U₁</td><td id="mU1">4.00 В</td></tr>
+<tr><td>U₂</td><td id="mU2">8.00 В</td></tr>
+</table>
+</div>
+
+<div class="box real">
+<h3>🔬 Тәжірибеде өлшенген мән</h3>
+<p class="small">Нақты тәжірибеден кейін осы жолдарға құрал көрсеткіштерін енгізіңіз.</p>
+<table>
+<tr><th>Шама</th><th>Өлшенген</th></tr>
+<tr><td>I</td><td><input id="realI" type="number" step="0.001" placeholder="А"></td></tr>
+<tr><td>U₁</td><td><input id="realU1" type="number" step="0.01" placeholder="В"></td></tr>
+<tr><td>U₂</td><td><input id="realU2" type="number" step="0.01" placeholder="В"></td></tr>
+<tr><td>R<sub>тәж</sub></td><td><input id="realR" type="number" step="0.01" placeholder="Ом"></td></tr>
+</table>
+<div id="comparison" class="small" style="margin-top:10px">Өлшенген мәндерді енгізсеңіз, модельмен айырмашылық автоматты есептеледі.</div>
+</div>
+</div>
+</section>
+
+<section id="table">
+<h2>Нәтижелерді тіркеуге арналған бос кесте</h2>
+<p class="small">Нақты зертханалық тәжірибеде кемінде 5 өлшеу жасаңыз.</p>
+<table>
+<thead>
+<tr><th>№</th><th>R₁, Ом</th><th>R₂, Ом</th><th>U, В</th><th>I, А</th><th>U₁, В</th><th>U₂, В</th><th>R<sub>теор</sub>, Ом</th><th>R<sub>тәж</sub>, Ом</th></tr>
+</thead>
+<tbody id="dataRows">
+<script>
+for(let i=1;i<=5;i++){
+  document.write(`<tr><td>${i}</td>
+  <td><input type="number"></td><td><input type="number"></td><td><input type="number"></td>
+  <td><input type="number" step="0.001"></td><td><input type="number" step="0.01"></td>
+  <td><input type="number" step="0.01"></td><td><input type="number" step="0.01"></td>
+  <td><input type="number" step="0.01"></td></tr>`);
+}
+</script>
+</tbody>
+</table>
+<div class="btns">
+<button id="fillExample" type="button">Мысал мәндермен толтыру</button>
+<button id="clearTable" class="secondary" type="button">Кестені тазалау</button>
+</div>
+</section>
+
+<section id="studentInfo">
+<h2 data-i18n="studentInfoTitle">Оқушы туралы мәлімет</h2>
+<div class="grid">
+<div><label for="studentName" data-i18n="studentNameLabel">Оқушының аты-жөні (ФИО)</label><input id="studentName" type="text" autocomplete="name" required placeholder="Аты-жөніңізді жазыңыз"></div>
+<div><label for="studentClass" data-i18n="studentClassLabel">Сыныбы</label><input id="studentClass" type="text" required placeholder="Мысалы: 8А"></div>
+</div>
+<p class="small" data-i18n="saveWarning">Жұмысты сақтағаннан кейін енгізілген жауаптар мен кестені өзгерту мүмкін болмайды.</p>
+<button id="saveWork" type="button" data-i18n="saveWork">Жұмысты сақтау және тапсыру</button>
+<button id="startOver" type="button" class="secondary" data-i18n="startOver">Жұмысты қайта бастау</button>
+<p id="saveStatus" role="status" aria-live="polite"></p>
+</section>
+
+<section id="conclusion">
+<h2>12. Қорытынды</h2>
+<div class="highlight">
+Тізбектей қосылған өткізгіштерде ток күші барлық бөліктерде бірдей:
+<b>I₁ = I₂ = I</b>. Жалпы кедергі кедергілердің қосындысына тең:
+<b>R<sub>жалпы</sub> = R₁ + R₂</b>. Кернеу резисторлар арасында олардың кедергілеріне пропорционал бөлінеді:
+<b>U<sub>жалпы</sub> = U₁ + U₂</b> және <b>U₁/U₂ = R₁/R₂</b>. Сондықтан кедергісі үлкен резисторда кернеудің түсуі де үлкен болады.
+</div>
+<h3>Өз қорытындыңызды жазыңыз</h3><textarea id="studentConclusion" class="conclusion" placeholder="Тәжірибе нәтижесіне сүйеніп, не байқағаныңызды және гипотеза расталды ма — жазыңыз."></textarea>
+</section>
+
+</main>
+<footer>№5 зертханалық жұмыс • Физика • Интерактивті модель</footer>
+
+<script>
+const $ = id => document.getElementById(id);
+const r1 = $("r1"), r2 = $("r2"), voltage = $("voltage");
+
+function fmt(x, n=2){ return Number(x).toFixed(n); }
+
+function calculate(){
+  const R1 = Number(r1.value), R2 = Number(r2.value), U = Number(voltage.value);
+  const Rt = R1 + R2;
+  const I = U / Rt;
+  const U1 = I * R1;
+  const U2 = I * R2;
+
+  $("r1Out").value = R1;
+  $("r2Out").value = R2;
+  $("uOut").value = fmt(U,1);
+
+  $("rTotal").textContent = fmt(Rt) + " Ом";
+  $("current").textContent = fmt(I,3) + " А";
+  $("u1").textContent = fmt(U1) + " В";
+  $("u2").textContent = fmt(U2) + " В";
+
+  $("calcR").textContent = fmt(Rt);
+  $("calcI").textContent = fmt(I,3);
+  $("sumU").textContent = fmt(U);
+
+  $("svgI").textContent = "I = " + fmt(I,3) + " А";
+  $("svgU1").textContent = "U₁ = " + fmt(U1) + " В";
+  $("svgU2").textContent = "U₂ = " + fmt(U2) + " В";
+
+  $("mR").textContent = fmt(Rt) + " Ом";
+  $("mI").textContent = fmt(I,3) + " А";
+  $("mI1").textContent = fmt(I,3) + " А";
+  $("mI2").textContent = fmt(I,3) + " А";
+  $("mU1").textContent = fmt(U1) + " В";
+  $("mU2").textContent = fmt(U2) + " В";
+
+  $("checks").innerHTML =
+    `✓ I<sub>жалпы</sub> = I₁ = I₂ = <b>${fmt(I,3)} А</b><br>
+     ✓ U₁ + U₂ = <b>${fmt(U1+U2)} В</b> = U<br>
+     ✓ R₁ + R₂ = <b>${fmt(Rt)} Ом</b><br>
+     ✓ U₁/U₂ = R₁/R₂ = <b>${fmt(R1/R2,3)}</b>`;
+
+  drawGraph(U, Rt, I);
+  compareReal();
+}
+
+function drawGraph(U, currentRt, currentI){
+  const canvas = $("graph"), ctx = canvas.getContext("2d");
+  const w = canvas.width, h = canvas.height;
+  ctx.clearRect(0,0,w,h);
+
+  const pad = {l:72,r:30,t:35,b:58};
+  const x0=pad.l, y0=h-pad.b, x1=w-pad.r, y1=pad.t;
+  const maxR=200, maxI=U/1;
+  const maxY=Math.max(maxI, currentI*1.15, 0.2);
+
+  ctx.strokeStyle="#cbd5e1"; ctx.lineWidth=1;
+  ctx.beginPath(); ctx.moveTo(x0,y0); ctx.lineTo(x1,y0); ctx.lineTo(x1,y1); ctx.stroke();
+
+  ctx.fillStyle="#475569"; ctx.font="14px sans-serif";
+  ctx.fillText($("language")?.value==="en"?"R_total, Ω":$("language")?.value==="ru"?"Rобщ, Ом":"Rжалпы, Ом", x1-100, y0+42);
+  ctx.save(); ctx.translate(20,(y0+y1)/2); ctx.rotate(-Math.PI/2); ctx.fillText($("language")?.value==="en"?"I, A":"I, А",0,0); ctx.restore();
+
+  for(let i=0;i<=5;i++){
+    const rv=maxR*i/5, x=x0+(x1-x0)*i/5;
+    ctx.fillText(rv.toFixed(0),x-10,y0+22);
+    ctx.strokeStyle="#e2e8f0"; ctx.beginPath(); ctx.moveTo(x,y0); ctx.lineTo(x,y1); ctx.stroke();
+  }
+  for(let i=0;i<=5;i++){
+    const iv=maxY*i/5, y=y0-(y0-y1)*i/5;
+    ctx.fillText(iv.toFixed(2),x0-55,y+5);
+    ctx.strokeStyle="#e2e8f0"; ctx.beginPath(); ctx.moveTo(x0,y); ctx.lineTo(x1,y); ctx.stroke();
+  }
+
+  ctx.strokeStyle="#2563eb"; ctx.lineWidth=3; ctx.beginPath();
+  for(let R=1;R<=maxR;R++){
+    const I=U/R, x=x0+(x1-x0)*(R/maxR), y=y0-(y0-y1)*(I/maxY);
+    if(R===1) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.stroke();
+
+  const cx=x0+(x1-x0)*(currentRt/maxR), cy=y0-(y0-y1)*(currentI/maxY);
+  ctx.fillStyle="#ea580c"; ctx.beginPath(); ctx.arc(cx,cy,7,0,2*Math.PI); ctx.fill();
+  ctx.fillStyle="#182230"; ctx.font="bold 14px sans-serif";
+  ctx.fillText(`${$("language")?.value==="en"?"Current point":"Қазіргі нүкте"}: (${fmt(currentRt)} ${$("language")?.value==="en"?"Ω":"Ом"}; ${fmt(currentI,3)} ${$("language")?.value==="en"?"A":"А"})`, Math.max(x0,cx-180), Math.max(y1+18,cy-14));
+  ctx.fillText(`U = ${fmt(U,1)} ${$("language")?.value==="en"?"V":"В"}`, x0+8,y1+18);
+}
+
+function compareReal(){
+  const R1=Number(r1.value), R2=Number(r2.value), U=Number(voltage.value);
+  const Rt=R1+R2, I=U/Rt, U1=I*R1, U2=I*R2;
+  const vals=[
+    ["I",Number($("realI").value),I,"А"],
+    ["U₁",Number($("realU1").value),U1,"В"],
+    ["U₂",Number($("realU2").value),U2,"В"],
+    ["R",Number($("realR").value),Rt,"Ом"]
+  ];
+  const entered=vals.filter(v=>Number.isFinite(v[1]) && v[1]!==0);
+  if(!entered.length){
+    $("comparison").innerHTML="Өлшенген мәндерді енгізсеңіз, модельмен айырмашылық автоматты есептеледі.";
+    return;
+  }
+  $("comparison").innerHTML=entered.map(v=>{
+    const diff=Math.abs(v[1]-v[2]);
+    const pct=v[2]!==0 ? diff/v[2]*100 : 0;
+    return `<b>${v[0]}</b>: өлшенген ${v[1]} ${v[3]}, модель ${fmt(v[2],v[0]==="I"?3:2)} ${v[3]} → айырмашылық ${fmt(pct,2)}%`;
+  }).join("<br>");
+}
+
+[r1,r2,voltage].forEach(el=>el.addEventListener("input",calculate));
+["realI","realU1","realU2","realR"].forEach(id=>$(id).addEventListener("input",compareReal));
+
+$("fillExample").addEventListener("click",()=>{
+  const rows=[...document.querySelectorAll("#dataRows tr")];
+  const data=[
+    [10,20,12,0.4,4,8,30,30],
+    [10,30,12,0.3,3,9,40,40],
+    [20,20,12,0.3,6,6,40,40],
+    [20,40,15,0.25,5,10,60,60],
+    [50,25,15,0.2,10,5,75,75]
+  ];
+  rows.forEach((row,i)=>{
+    [...row.querySelectorAll("input")].forEach((inp,j)=>inp.value=data[i][j]);
+  });
+});
+
+$("clearTable").addEventListener("click",()=>{
+  document.querySelectorAll("#dataRows input").forEach(i=>i.value="");
+});
+
+
+// Put the sections in the requested learning sequence without changing their content.
+const main = document.querySelector('main');
+['question','goal','hypothesis','variables','safety','procedure','setup','model','table','compare','results','conclusion'].forEach(id=>{const el=document.getElementById(id);if(el)main.appendChild(el)});
+// Circuit-building activity
+const parts={battery:['Ток көзі','Тізбекке электр энергиясын береді.'],switch:['Қосқыш','Тізбекті тұйықтайды немесе ажыратады.'],ammeter:['Амперметр','Ток күшін өлшейді; тізбектей қосылады.'],r1:['Резистор R₁','Токқа кедергі жасайды; кернеудің U₁ түсуі өлшенеді.'],r2:['Резистор R₂','Токқа кедергі жасайды; кернеудің U₂ түсуі өлшенеді.'],voltmeter:['Вольтметр','Кернеуді өлшейді; резисторға параллель қосылады.'],wire:['Жалғаушы сым','Құралдарды электрлік байланыстырады.']};
+let circuit=[];
+document.querySelectorAll('.part').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.part;circuit.push(k);renderParts();$('partInfo').textContent=parts[k][0]+': '+parts[k][1]}));
+function renderParts(){const wrap=$('builtParts');wrap.innerHTML='';if(!circuit.length){wrap.textContent='Құралдарды жоғарыдан таңдаңыз.';return}circuit.forEach((k,i)=>{const d=document.createElement('button');d.className='built-part';d.type='button';d.innerHTML='<b>'+parts[k][0]+'</b><small>'+(i+1)+'-құрал · басып ақпаратты ашу</small>';d.addEventListener('click',()=>$('partInfo').textContent=parts[k][0]+': '+parts[k][1]);wrap.appendChild(d);if(i<circuit.length-1){const arrow=document.createElement('span');arrow.textContent='→';arrow.style.color='#facc15';wrap.appendChild(arrow)}})}
+$('resetCircuit').addEventListener('click',()=>{circuit=[];renderParts();$('circuitFeedback').textContent='Схема тазартылды. Құралдарды қайта таңдаңыз.';$('partInfo').textContent='Құралды таңдағанда оның атауы мен қызметі осында шығады.'});
+$('checkCircuit').addEventListener('click',()=>{const has=k=>circuit.includes(k);const ok=has('battery')&&has('switch')&&has('ammeter')&&has('r1')&&has('r2')&&has('wire');const meter=has('voltmeter');$('circuitFeedback').innerHTML=ok?'<b>✓ Негізгі тізбек құрастырылған!</b> Ток жолы: ток көзі → қосқыш → амперметр → R₁ → R₂ → ток көзі.'+(meter?' Вольтметрді резисторға параллель қосқаныңызды тексеріңіз.':' <b>Ескерту:</b> кернеуді өлшеу үшін вольтметрді қосыңыз.'):'<b>Әлі дұрыс емес.</b> Ток көзі, қосқыш, амперметр, R₁, R₂ және жалғаушы сым қажет. Құралдардың реті мен вольтметрдің параллель жалғануын тексеріңіз.'});
+// Draw measured data from the student's table as a second, contrasting graph series.
+const originalDrawGraph=drawGraph;
+drawGraph=function(U,currentRt,currentI){originalDrawGraph(U,currentRt,currentI);const canvas=$('graph'),ctx=canvas.getContext('2d');const rows=[...document.querySelectorAll('#dataRows tr')];const pts=[];rows.forEach(row=>{const v=[...row.querySelectorAll('input')].map(i=>Number(i.value));if(v[0]>0&&v[1]>0&&v[3]>0&&Number.isFinite(v[3]))pts.push({R:v[0]+v[1],I:v[3]})});if(!pts.length)return;const w=canvas.width,h=canvas.height,pad={l:72,r:30,t:35,b:58},x0=pad.l,y0=h-pad.b,x1=w-pad.r,y1=pad.t,maxR=200,maxY=Math.max(U, currentI*1.15, ...pts.map(p=>p.I))*1.05;ctx.strokeStyle='#dc2626';ctx.fillStyle='#dc2626';ctx.lineWidth=3;ctx.beginPath();pts.forEach((p,i)=>{const x=x0+(x1-x0)*Math.min(p.R,maxR)/maxR,y=y0-(y0-y1)*p.I/maxY;if(i===0)ctx.moveTo(x,y);else ctx.lineTo(x,y)});ctx.stroke();pts.forEach(p=>{const x=x0+(x1-x0)*Math.min(p.R,maxR)/maxR,y=y0-(y0-y1)*p.I/maxY;ctx.beginPath();ctx.arc(x,y,7,0,Math.PI*2);ctx.fill()})};
+document.querySelectorAll('#dataRows input').forEach(i=>i.addEventListener('input',()=>calculate()));
+// Full-page translations operate on text nodes, preserving HTML structure, formulas and input controls.
+const tr={
+ru:{
+'5-топ • №5 зертханалық жұмыс':'Группа 5 • Лабораторная работа №5','Өткізгіштерді тізбектей қосуды зерделеу':'Исследование последовательного соединения проводников','Тізбектей жалғанған екі резистордың жалпы кедергісін, ток күшін және кернеудің бөлінуін интерактивті модель арқылы зерттеу.':'Исследуйте общее сопротивление, силу тока и распределение напряжения при последовательном соединении двух резисторов с помощью интерактивной модели.','Зерттеу сұрағы':'Исследовательский вопрос','Зерттеудің мақсаты мен міндеттері':'Цель и задачи исследования','Гипотеза және физикалық негіздеме':'Гипотеза и физическое обоснование','Тәуелсіз, тәуелді және тұрақты шамалар':'Независимые, зависимые и постоянные величины','Қауіпсіздік ережелері':'Правила безопасности','Зертханалық жұмысты өткізу жоспары':'План проведения лабораторной работы','Құралдар және қондырғы сызбасы':'Приборы и схема установки','Интерактивті модель':'Интерактивная модель','Нәтижелерді тіркеуге арналған бос кесте':'Таблица для регистрации результатов','Модельдің болжамы':'Прогноз модели','Тәжірибеде өлшенген мән':'Значение, измеренное в эксперименте','Нәтиже және график':'Результаты и график','Қорытынды':'Вывод','Екі өткізгішті тізбектей қосқанда олардың кедергі мәндері мен ток көзінің кернеуін өзгерту тізбектегі жалпы кедергіге, ток күшіне және әр өткізгіштегі кернеуге қалай әсер етеді?':'Как изменение сопротивлений двух последовательно соединённых проводников и напряжения источника влияет на общее сопротивление, силу тока и напряжение на каждом проводнике?','Мақсат:':'Цель:','екі өткізгішті тізбектей қосу кезінде жалпы кедергіні, ток күшін және әр өткізгіштегі кернеуді тәжірибе және интерактивті модель арқылы зерттеу.':'исследовать общее сопротивление, силу тока и напряжение на каждом проводнике при последовательном соединении с помощью эксперимента и интерактивной модели.','Міндеттері':'Задачи','Тізбектей жалғанған өткізгіштердің негізгі физикалық заңдылықтарын қарастыру.':'Рассмотреть основные физические закономерности последовательного соединения проводников.','мәндерін өзгертіп, ток күші мен кернеулерді бақылау.':'изменять значения и наблюдать за силой тока и напряжениями.','Жалпы кедергіні теориялық формуламен есептеу және нәтижемен салыстыру.':'Рассчитать общее сопротивление по теоретической формуле и сравнить результат.','Модельдің болжамын нақты тәжірибеде өлшенген мәндермен салыстыру.':'Сравнить прогноз модели со значениями, измеренными в эксперименте.','Алынған деректер бойынша график тұрғызу және қорытынды жасау.':'Построить график по полученным данным и сделать вывод.','Егер':'Если','онда':'то','себебі':'поскольку','Негізгі формулалар':'Основные формулы','Қорытынды болжам:':'Итоговая гипотеза:','кедергісі үлкен резисторда кернеудің түсуі де үлкен болады.':'на резисторе с большим сопротивлением падение напряжения также больше.','Шама':'Величина','Түрі':'Тип','Белгіленуі':'Обозначение','1-резистор кедергісі':'Сопротивление первого резистора','2-резистор кедергісі':'Сопротивление второго резистора','Ток көзінің кернеуі':'Напряжение источника','Жалпы кедергі':'Общее сопротивление','Ток күші':'Сила тока','Резисторлардағы кернеулер':'Напряжения на резисторах','Тәуелсіз':'Независимая','Тәуелді':'Зависимая','Тұрақты':'Постоянная','Тізбектей':'Последовательное соединение','Резисторлар':'Резисторы','Қажетті құралды таңдаңыз, содан кейін төмендегі жұмыс алаңына басып қосыңыз. Құралды бассаңыз, атауы мен қызметі көрсетіледі.':'Выберите нужный прибор, затем нажмите на рабочую область ниже, чтобы добавить его. При нажатии на прибор появятся его название и назначение.','Ток көзі':'Источник тока','Қосқыш':'Выключатель','Амперметр':'Амперметр','Резистор':'Резистор','Вольтметр':'Вольтметр','Жалғаушы сым':'Соединительный провод','Схеманы құрастыру алаңы':'Рабочая область сборки схемы','Құралдарды жоғарыдан таңдаңыз.':'Выберите приборы выше.','Құралды таңдағанда оның атауы мен қызметі осында шығады.':'Здесь появятся название и назначение выбранного прибора.','Схеманы тексеру':'Проверить схему','Қайта бастау':'Начать заново','Дұрыс схема: ток көзі → қосқыш → амперметр → R₁ → R₂ → ток көзі. Вольтметр резисторға параллель жалғанады.':'Правильная схема: источник тока → выключатель → амперметр → R₁ → R₂ → источник тока. Вольтметр подключается параллельно резистору.','Схеманың үлгісі':'Пример схемы','Амперметр тізбекке тізбектей, ал вольтметр әр резисторға параллель қосылады.':'Амперметр подключается последовательно, а вольтметр — параллельно каждому резистору.','Сары үзік сызық — өткізгіш бойымен қозғалып, токты тудыратын электр зарядтарының қозғалыс бағыты.':'Жёлтая пунктирная линия показывает направление движения электрических зарядов, создающих ток в проводнике.','Тізбекті құрастырғанда ток көзін ажыратыңыз.':'Отключите источник питания перед сборкой цепи.','Сымдардың оқшаулауы бүтін екенін тексеріңіз.':'Проверьте целостность изоляции проводов.','Қысқа тұйықталуға жол бермеңіз.':'Не допускайте короткого замыкания.','Амперметрді параллель қоспаңыз.':'Не подключайте амперметр параллельно.','Вольтметрді тізбекке тізбектей қоспаңыз.':'Не подключайте вольтметр последовательно в цепь.','Ток көзінің рұқсат етілген кернеуінен аспаңыз.':'Не превышайте допустимое напряжение источника питания.','Қосылған тізбектің жалаңаш өткізгіштерін ұстамаңыз.':'Не касайтесь оголённых проводников включённой цепи.','Жұмыс аяқталған соң ток көзін ажыратыңыз.':'После завершения работы отключите источник питания.','Үш параметрді өзгертіңіз. Модель нәтижелерді бірден қайта есептейді.':'Измените три параметра. Модель сразу пересчитает результаты.','Автоматты тексеру':'Автоматическая проверка','Есептеу':'Расчёт','Тізбектегі ток':'Ток в цепи','Мысал мәндермен толтыру':'Заполнить примерными значениями','Кестені тазалау':'Очистить таблицу','Теориялық модель':'Теоретическая модель','Оқушы кестесіндегі тәжірибелік мәндер':'Экспериментальные значения из таблицы ученика','Көк сызық — теориялық модель':'Синяя линия — теоретическая модель','Қызыл нүктелер мен сызық — оқушы кестесіндегі тәжірибелік мәндер':'Красные точки и линия — экспериментальные значения из таблицы ученика','Теория:':'Теория:','Қазіргі нүкте:':'Текущая точка:','Нақты тәжірибеден кейін осы жолдарға құрал көрсеткіштерін енгізіңіз.':'После эксперимента внесите в эти поля показания приборов.','Өлшенген мәндерді енгізсеңіз, модельмен айырмашылық автоматты есептеледі.':'После ввода измеренных значений разница с моделью будет рассчитана автоматически.','Өз қорытындыңызды жазыңыз':'Напишите свой вывод','Тәжірибе нәтижесіне сүйеніп, не байқағаныңызды және гипотеза расталды ма — жазыңыз.':'Опишите, что вы заметили по результатам эксперимента и подтвердилась ли гипотеза.','Тізбектей қосылған өткізгіштерде ток күші барлық бөліктерде бірдей:':'При последовательном соединении сила тока одинакова во всех участках цепи:','Жалпы кедергі кедергілердің қосындысына тең:':'Общее сопротивление равно сумме сопротивлений:','Кернеу резисторлар арасында олардың кедергілеріне пропорционал бөлінеді:':'Напряжение распределяется между резисторами пропорционально их сопротивлениям:','№5 зертханалық жұмыс • Физика • Интерактивті модель':'Лабораторная работа №5 • Физика • Интерактивная модель','Қалыпты':'Обычная','Жоғары контраст':'Высокий контраст','Жылы түстер':'Тёплые цвета','Суық түстер':'Холодные цвета'},
+en:{
+'5-топ • №5 зертханалық жұмыс':'Group 5 • Lab work No. 5','Өткізгіштерді тізбектей қосуды зерделеу':'Investigating Series Connections of Conductors','Тізбектей жалғанған екі резистордың жалпы кедергісін, ток күшін және кернеудің бөлінуін интерактивті модель арқылы зерттеу.':'Explore total resistance, current, and voltage distribution in two resistors connected in series using an interactive model.','Зерттеу сұрағы':'Research question','Зерттеудің мақсаты мен міндеттері':'Research aim and objectives','Гипотеза және физикалық негіздеме':'Hypothesis and physical explanation','Тәуелсіз, тәуелді және тұрақты шамалар':'Independent, dependent and controlled variables','Қауіпсіздік ережелері':'Safety rules','Зертханалық жұмысты өткізу жоспары':'Laboratory procedure','Құралдар және қондырғы сызбасы':'Equipment and circuit diagram','Интерактивті модель':'Interactive model','Нәтижелерді тіркеуге арналған бос кесте':'Results recording table','Модельдің болжамы':'Model prediction','Тәжірибеде өлшенген мән':'Experimentally measured value','Нәтиже және график':'Results and graph','Қорытынды':'Conclusion','Екі өткізгішті тізбектей қосқанда олардың кедергі мәндері мен ток көзінің кернеуін өзгерту тізбектегі жалпы кедергіге, ток күшіне және әр өткізгіштегі кернеуге қалай әсер етеді?':'How do changes in the resistances of two conductors connected in series and the source voltage affect total resistance, current, and voltage across each conductor?','Мақсат:':'Aim:','Міндеттері':'Objectives','Негізгі формулалар':'Key formulas','Қорытынды болжам:':'Final prediction:','кедергісі үлкен резисторда кернеудің түсуі де үлкен болады.':'the resistor with greater resistance has a greater voltage drop.','Шама':'Quantity','Түрі':'Type','Белгіленуі':'Symbol','Ток көзі':'Power source','Қосқыш':'Switch','Амперметр':'Ammeter','Вольтметр':'Voltmeter','Жалғаушы сым':'Connecting wire','Схеманы құрастыру алаңы':'Circuit-building area','Құралдарды жоғарыдан таңдаңыз.':'Select components above.','Құралды таңдағанда оның атауы мен қызметі осында шығады.':'The selected component name and function will appear here.','Схеманы тексеру':'Check circuit','Қайта бастау':'Reset','Дұрыс схема: ток көзі → қосқыш → амперметр → R₁ → R₂ → ток көзі. Вольтметр резисторға параллель жалғанады.':'Correct circuit: power source → switch → ammeter → R₁ → R₂ → power source. Connect the voltmeter in parallel with the resistor.','Схеманың үлгісі':'Circuit example','Амперметр тізбекке тізбектей, ал вольтметр әр резисторға параллель қосылады.':'Connect the ammeter in series and the voltmeter in parallel with each resistor.','Сары үзік сызық — өткізгіш бойымен қозғалып, токты тудыратын электр зарядтарының қозғалыс бағыты.':'The yellow dashed line indicates the direction of moving electric charges that produce current in the conductor.','Үш параметрді өзгертіңіз. Модель нәтижелерді бірден қайта есептейді.':'Change the three parameters. The model recalculates the results immediately.','Автоматты тексеру':'Automatic check','Есептеу':'Calculation','Мысал мәндермен толтыру':'Fill with example values','Кестені тазалау':'Clear table','Көк сызық — теориялық модель':'Blue line — theoretical model','Қызыл нүктелер мен сызық — оқушы кестесіндегі тәжірибелік мәндер':'Red points and line — experimental values from the student table','Нақты тәжірибеден кейін осы жолдарға құрал көрсеткіштерін енгізіңіз.':'After the experiment, enter the instrument readings in these fields.','Өлшенген мәндерді енгізсеңіз, модельмен айырмашылық автоматты есептеледі.':'After entering measured values, the difference from the model is calculated automatically.','Өз қорытындыңызды жазыңыз':'Write your conclusion','Тізбектей қосылған өткізгіштерде ток күші барлық бөліктерде бірдей:':'In a series circuit, current is the same at every point:','Жалпы кедергі кедергілердің қосындысына тең:':'Total resistance equals the sum of the resistances:','Кернеу резисторлар арасында олардың кедергілеріне пропорционал бөлінеді:':'Voltage is distributed between resistors in proportion to their resistances:','№5 зертханалық жұмыс • Физика • Интерактивті модель':'Lab work No. 5 • Physics • Interactive model','Қалыпты':'Default','Жоғары контраст':'High contrast','Жылы түстер':'Warm colors','Суық түстер':'Cool colors'}
+};
+const kkOriginalText=new WeakMap();
+function setLanguage(lang){
+ document.documentElement.lang=lang;
+ const walker=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT);
+ let node;while(node=walker.nextNode()){
+  if(!kkOriginalText.has(node))kkOriginalText.set(node,node.nodeValue);
+  const original=kkOriginalText.get(node);const trimmed=original.trim();if(!trimmed)continue;
+  let translated=lang==='kk'?original:null;
+  if(lang!=='kk'){
+   const dict=tr[lang]||{};
+   if(dict[trimmed])translated=original.replace(trimmed,dict[trimmed]);
+   else {for(const [key,value] of Object.entries(dict)){if(trimmed===key || (trimmed.includes(key) && key.length>5)){translated=original.replace(key,value);break;}}}
+  }
+  if(translated!==null)node.nodeValue=translated;
+ }
+ const optTranslations={ru:{'🎨 Қалыпты':'🎨 Обычная','◐ Жоғары контраст':'◐ Высокий контраст','Жылы түстер':'Тёплые цвета','Суық түстер':'Холодные цвета'},en:{'🎨 Қалыпты':'🎨 Default','◐ Жоғары контраст':'◐ High contrast','Жылы түстер':'Warm colors','Суық түстер':'Cool colors'}};
+ [...$('themeChoice').options].forEach(o=>{if(lang==='kk')o.textContent=o.dataset.kk||o.textContent;else{if(!o.dataset.kk)o.dataset.kk=o.textContent;o.textContent=(optTranslations[lang]||{})[o.dataset.kk]||o.dataset.kk}});
+ $('language').setAttribute('aria-label',lang==='ru'?'Выбор языка':lang==='en'?'Choose language':'Тілді таңдау');
+ $('themeChoice').setAttribute('aria-label',lang==='ru'?'Цветовая схема':lang==='en'?'Color theme':'Түстер тақырыбы');
+}
+$('language').addEventListener('change',e=>{setLanguage(e.target.value);calculate();renderParts();});$('themeChoice').addEventListener('change',e=>{document.body.classList.remove('contrast','warm','cool');if(e.target.value!=='default')document.body.classList.add(e.target.value)});$('largeText').addEventListener('click',()=>{document.body.classList.toggle('large-text');$('largeText').setAttribute('aria-pressed',document.body.classList.contains('large-text')?'true':'false')});
+
+// Complete localization layer: translates all visible text, table headings, placeholders,
+// accessibility labels, SVG labels, units, and canvas annotations.
+Object.assign(tr.ru, {
+'Мақсат пен міндеттер':'Цель и задачи','Гипотеза':'Гипотеза','Шамалар':'Величины','Қауіпсіздік':'Безопасность','Жұмыс жоспары':'План работы','Құралдар':'Приборы','Модель':'Модель','Кесте':'Таблица','Салыстыру':'Сравнение','График':'График','Оқушы туралы мәлімет':'Данные ученика','Оқушының аты-жөні (ФИО)':'ФИО ученика','Сыныбы':'Класс','Аты-жөніңізді жазыңыз':'Введите ФИО','Мысалы: 8А':'Например: 8А','Жұмысты сақтағаннан кейін енгізілген жауаптар мен кестені өзгерту мүмкін болмайды.':'После сохранения работы ответы и таблицу нельзя будет изменить.','Жұмысты сақтау және тапсыру':'Сохранить и сдать работу','Жұмысты қайта бастау':'Начать работу заново','Сақтау үшін ФИО мен сыныпты толтырыңыз.':'Для сохранения укажите ФИО и класс.','Жұмыс сақталды. Енді өзгерістер енгізу мүмкін емес.':'Работа сохранена. Теперь изменения недоступны.','Оқушының аты-жөні':'ФИО ученика','Сынып':'Класс','Егер екі өткізгіш':'Если два проводника','онда барлық бөліктердегі ток күші бірдей болып':'то сила тока на всех участках будет одинаковой','жалпы кедергі кедергілердің қосындысына тең болады':'общее сопротивление будет равно сумме сопротивлений','ал кернеу кедергілерге пропорционал бөлінеді':'а напряжение распределится пропорционально сопротивлениям','себебі тізбектей қосылған тізбекте бірдей ток өтеді және Ом заңы орындалады.':'поскольку при последовательном соединении ток одинаков, а закон Ома выполняется.','1-резистор кедергісі':'Сопротивление резистора 1','2-резистор кедергісі':'Сопротивление резистора 2','Резисторлардағы кернеулер':'Напряжения на резисторах','Қосылу түрі':'Тип соединения','Өткізгіштердің түрі':'Тип проводников','Қажетті құралды таңдаңыз, содан кейін төмендегі жұмыс алаңына басып қосыңыз. Құралды бассаңыз, атауы мен қызметі көрсетіледі.':'Выберите прибор, затем нажмите на рабочую область ниже, чтобы добавить его. Нажмите на прибор, чтобы увидеть название и назначение.','Резистор R₁':'Резистор R₁','Резистор R₂':'Резистор R₂','Ток көзі':'Источник питания','Схеманы құрастыру алаңы':'Область сборки схемы','Схема тазартылды. Құралдарды қайта таңдаңыз.':'Схема очищена. Выберите приборы заново.','Құралды таңдағанда оның атауы мен қызметі осында шығады.':'Название и назначение выбранного прибора появятся здесь.','Әлі дұрыс емес.':'Схема собрана неверно.','Негізгі тізбек құрастырылған!':'Основная цепь собрана!','Ескерту:':'Внимание:','кернеуді өлшеу үшін вольтметрді қосыңыз.':'подключите вольтметр для измерения напряжения.','Құралдардың реті мен вольтметрдің параллель жалғануын тексеріңіз.':'Проверьте порядок приборов и параллельное подключение вольтметра.','Rжалпы, Ом':'Rобщ, Ом','Қазіргі нүкте:':'Текущая точка:','Өлшенген':'Измерено','Өлшенген мәндерді енгізсеңіз, модельмен айырмашылық автоматты есептеледі.':'После ввода измеренных значений разница с моделью рассчитается автоматически.','Нақты зертханалық тәжірибеде кемінде 5 өлшеу жасаңыз.':'В реальном лабораторном опыте выполните не менее 5 измерений.','Тәжірибе нәтижесіне сүйеніп, не байқағаныңызды және гипотеза расталды ма — жазыңыз.':'Опишите результаты опыта и укажите, подтвердилась ли гипотеза.','Тәжірибелік жалпы кедергіні':'Экспериментальное общее сопротивление','арқылы есептеңіз.':'рассчитайте по формуле.','Қалыпты':'Обычная','Жоғары контраст':'Высокий контраст','Жылы түстер':'Тёплые цвета','Суық түстер':'Холодные цвета'
+});
+Object.assign(tr.en, {
+'Мақсат пен міндеттер':'Aim and objectives','Гипотеза':'Hypothesis','Шамалар':'Variables','Қауіпсіздік':'Safety','Жұмыс жоспары':'Procedure','Құралдар':'Equipment','Модель':'Model','Кесте':'Table','Салыстыру':'Comparison','График':'Graph','Оқушы туралы мәлімет':'Student information','Оқушының аты-жөні (ФИО)':'Student full name','Сыныбы':'Class','Аты-жөніңізді жазыңыз':'Enter your full name','Мысалы: 8А':'For example: 8A','Жұмысты сақтағаннан кейін енгізілген жауаптар мен кестені өзгерту мүмкін болмайды.':'After saving, you will no longer be able to edit your answers or table.','Жұмысты сақтау және тапсыру':'Save and submit work','Жұмысты қайта бастау':'Start over','Сақтау үшін ФИО мен сыныпты толтырыңыз.':'Enter your full name and class to save.','Жұмыс сақталды. Енді өзгерістер енгізу мүмкін емес.':'Work saved. Editing is now locked.','Оқушының аты-жөні':'Student full name','Сынып':'Class','Егер екі өткізгіш':'If two conductors','онда барлық бөліктердегі ток күші бірдей болып':'then the current will be the same at every point','жалпы кедергі кедергілердің қосындысына тең болады':'total resistance will equal the sum of the resistances','ал кернеу кедергілерге пропорционал бөлінеді':'and voltage will divide in proportion to the resistances','себебі тізбектей қосылған тізбекте бірдей ток өтеді және Ом заңы орындалады.':'because current is the same in a series circuit and Ohm’s law applies.','1-резистор кедергісі':'Resistance of resistor 1','2-резистор кедергісі':'Resistance of resistor 2','Резисторлардағы кернеулер':'Voltage across resistors','Қосылу түрі':'Connection type','Өткізгіштердің түрі':'Conductor type','Қажетті құралды таңдаңыз, содан кейін төмендегі жұмыс алаңына басып қосыңыз. Құралды бассаңыз, атауы мен қызметі көрсетіледі.':'Select a component, then click the workspace below to add it. Click a component to view its name and function.','Резистор R₁':'Resistor R₁','Резистор R₂':'Resistor R₂','Ток көзі':'Power source','Схеманы құрастыру алаңы':'Circuit assembly area','Схема тазартылды. Құралдарды қайта таңдаңыз.':'Circuit cleared. Select the components again.','Құралды таңдағанда оның атауы мен қызметі осында шығады.':'The selected component’s name and function will appear here.','Әлі дұрыс емес.':'The circuit is not correct yet.','Негізгі тізбек құрастырылған!':'The main circuit is assembled!','Ескерту:':'Note:','кернеуді өлшеу үшін вольтметрді қосыңыз.':'add a voltmeter to measure voltage.','Құралдардың реті мен вольтметрдің параллель жалғануын тексеріңіз.':'Check the component order and connect the voltmeter in parallel.','Rжалпы, Ом':'Rtotal, Ω','Қазіргі нүкте:':'Current point:','Өлшенген':'Measured','Өлшенген мәндерді енгізсеңіз, модельмен айырмашылық автоматты есептеледі.':'After entering measured values, the difference from the model is calculated automatically.','Нақты зертханалық тәжірибеде кемінде 5 өлшеу жасаңыз.':'Take at least 5 measurements in the actual lab experiment.','Тәжірибе нәтижесіне сүйеніп, не байқағаныңызды және гипотеза расталды ма — жазыңыз.':'Describe what you observed and whether the hypothesis was supported.','Тәжірибелік жалпы кедергіні':'Calculate experimental total resistance','арқылы есептеңіз.':'using the formula.','Қалыпты':'Default','Жоғары контраст':'High contrast','Жылы түстер':'Warm colors','Суық түстер':'Cool colors'
+});
+
+Object.assign(tr.ru, {
+'Тізбектей жалғанған өткізгіштердің негізгі физикалық заңдылықтарын қарастыру.':'Рассмотреть основные физические закономерности последовательного соединения проводников.',
+' мәндерін өзгертіп, ток күші мен кернеулерді бақылау.':' изменять значения и наблюдать за силой тока и напряжениями.',
+'Алынған деректер бойынша график тұрғызу және қорытынды жасау.':'Построить график по полученным данным и сделать вывод.',
+'Тізбектей қосылған өткізгіштерде ток күші барлық бөліктерде бірдей:':'При последовательном соединении сила тока одинакова на всех участках цепи:',
+'Жалпы кедергі кедергілердің қосындысына тең:':'Общее сопротивление равно сумме сопротивлений:',
+'Кернеу резисторлар арасында олардың кедергілеріне пропорционал бөлінеді:':'Напряжение распределяется между резисторами пропорционально их сопротивлениям:',
+'Тізбекті құрастырғанда ток көзін ажыратыңыз.':'Отключите источник питания перед сборкой цепи.',
+'Сымдардың оқшаулауы бүтін екенін тексеріңіз.':'Проверьте целостность изоляции проводов.',
+'Қысқа тұйықталуға жол бермеңіз.':'Не допускайте короткого замыкания.',
+'Амперметрді параллель қоспаңыз.':'Не подключайте амперметр параллельно.',
+'Вольтметрді тізбекке тізбектей қоспаңыз.':'Не подключайте вольтметр последовательно.',
+'Ток көзінің рұқсат етілген кернеуінен аспаңыз.':'Не превышайте допустимое напряжение источника питания.',
+'Қосылған тізбектің жалаңаш өткізгіштерін ұстамаңыз.':'Не касайтесь оголённых проводников включённой цепи.',
+'Жұмыс аяқталған соң ток көзін ажыратыңыз.':'После завершения работы отключите источник питания.',
+'Тізбекті қосып, амперметрден':'Включите цепь и измерьте амперметром',
+'мәнін өлшеңіз.':'значение.',
+'Бірінші резистордағы':'Измерьте напряжение',
+'және екінші резистордағы':'на первом резисторе и',
+'кернеулерін өлшеңіз.':'на втором резисторе.',
+'Өлшеулерді кемінде':'Повторите измерения как минимум для',
+'түрлі параметрлер жиынтығы':'различных наборов параметров',
+'үшін қайталаңыз.':'раз.',
+'Әр өлшеуде барлық шамалардың өлшем бірліктерін сақтаңыз: Ом, В, А.':'Для каждого измерения указывайте единицы: Ом, В, А.',
+'Теориялық жалпы кедергіні':'Рассчитайте теоретическое общее сопротивление по формуле',
+'арқылы есептеңіз.':' .',
+'Тәжірибелік жалпы кедергіні':'Рассчитайте экспериментальное общее сопротивление по формуле',
+'Модель болжамын тәжірибелік өлшемдермен салыстырыңыз.':'Сравните прогноз модели с экспериментальными измерениями.',
+'Маңызды:':'Важно:',
+'төмендегі интерактивті модель нақты электр тізбегінің орнына жүрмейді. Ол теориялық болжамды есептейді. Нақты тәжірибелік мәндерді өлшеу құралдарынан бөлек енгізу қажет.':'интерактивная модель ниже не заменяет реальную электрическую цепь. Она рассчитывает теоретический прогноз. Реальные экспериментальные значения нужно вводить отдельно.',
+'Үш параметрді өзгертіңіз. Модель нәтижелерді бірден қайта есептейді.':'Измените три параметра. Модель сразу пересчитает результаты.',
+'Жалпы кедергі':'Общее сопротивление','Тізбектегі ток I':'Ток в цепи I','R₁-дегі кернеу U₁':'Напряжение на R₁, U₁','R₂-дегі кернеу U₂':'Напряжение на R₂, U₂',
+'Нақты тәжірибеден кейін осы жолдарға құрал көрсеткіштерін енгізіңіз.':'После реального опыта внесите показания приборов в эти поля.',
+'Нақты зертханалық тәжірибеде кемінде 5 өлшеу жасаңыз.':'В реальном лабораторном опыте выполните не менее 5 измерений.',
+'R₁, Ом':'R₁, Ом','R₂, Ом':'R₂, Ом','U, В':'U, В','I, А':'I, А','U₁, В':'U₁, В','U₂, В':'U₂, В',
+'Мән':'Значение','Түрі':'Тип','Белгіленуі':'Обозначение','Құралды бассаңыз, атауы мен қызметі көрсетіледі.':'Нажмите на прибор, чтобы увидеть его название и назначение.',
+'Сары үзік сызық — өткізгіш бойымен қозғалып, токты тудыратын электр зарядтарының қозғалыс бағыты.':'Жёлтая пунктирная линия показывает направление движения электрических зарядов, создающих ток в проводнике.',
+'Тізбектей жалғанған екі резистордың жалпы кедергісін, ток күшін және кернеудің бөлінуін интерактивті модель арқылы зерттеу.':'Исследуйте общее сопротивление, силу тока и распределение напряжения у двух последовательно соединённых резисторов с помощью интерактивной модели.',
+'Ом':'Ом','В':'В','А':'А'
+});
+Object.assign(tr.en, {
+'Тізбектей жалғанған өткізгіштердің негізгі физикалық заңдылықтарын қарастыру.':'Review the key physical laws for conductors connected in series.',
+' мәндерін өзгертіп, ток күші мен кернеулерді бақылау.':' change the values and observe current and voltage.',
+'Алынған деректер бойынша график тұрғызу және қорытынды жасау.':'Plot a graph from the collected data and draw a conclusion.',
+'Тізбектей қосылған өткізгіштерде ток күші барлық бөліктерде бірдей:':'In a series circuit, current is the same at every point:',
+'Жалпы кедергі кедергілердің қосындысына тең:':'Total resistance equals the sum of the resistances:',
+'Кернеу резисторлар арасында олардың кедергілеріне пропорционал бөлінеді:':'Voltage divides between resistors in proportion to their resistances:',
+'Тізбекті құрастырғанда ток көзін ажыратыңыз.':'Disconnect the power source before assembling the circuit.',
+'Сымдардың оқшаулауы бүтін екенін тексеріңіз.':'Check that the wire insulation is intact.',
+'Қысқа тұйықталуға жол бермеңіз.':'Avoid short circuits.',
+'Амперметрді параллель қоспаңыз.':'Do not connect the ammeter in parallel.',
+'Вольтметрді тізбекке тізбектей қоспаңыз.':'Do not connect the voltmeter in series.',
+'Ток көзінің рұқсат етілген кернеуінен аспаңыз.':'Do not exceed the power source’s rated voltage.',
+'Қосылған тізбектің жалаңаш өткізгіштерін ұстамаңыз.':'Do not touch exposed conductors while the circuit is powered.',
+'Жұмыс аяқталған соң ток көзін ажыратыңыз.':'Disconnect the power source when finished.',
+'Тізбекті қосып, амперметрден':'Switch on the circuit and measure with the ammeter',
+'мәнін өлшеңіз.':'the value.',
+'Бірінші резистордағы':'Measure the voltage',
+'және екінші резистордағы':'across the first resistor and',
+'кернеулерін өлшеңіз.':'across the second resistor.',
+'Өлшеулерді кемінде':'Repeat the measurements for at least',
+'түрлі параметрлер жиынтығы':'different parameter sets',
+'үшін қайталаңыз.':'times.',
+'Әр өлшеуде барлық шамалардың өлшем бірліктерін сақтаңыз: Ом, В, А.':'Use units for all measurements: ohms, volts, and amperes.',
+'Теориялық жалпы кедергіні':'Calculate the theoretical total resistance using',
+'арқылы есептеңіз.':' .',
+'Тәжірибелік жалпы кедергіні':'Calculate the experimental total resistance using',
+'Модель болжамын тәжірибелік өлшемдермен салыстырыңыз.':'Compare the model prediction with experimental measurements.',
+'Маңызды:':'Important:',
+'төмендегі интерактивті модель нақты электр тізбегінің орнына жүрмейді. Ол теориялық болжамды есептейді. Нақты тәжірибелік мәндерді өлшеу құралдарынан бөлек енгізу қажет.':'The interactive model below does not replace a real circuit. It calculates theoretical predictions. Enter actual experimental values separately.',
+'Үш параметрді өзгертіңіз. Модель нәтижелерді бірден қайта есептейді.':'Change the three parameters. The model recalculates results immediately.',
+'Жалпы кедергі':'Total resistance','Тізбектегі ток I':'Circuit current I','R₁-дегі кернеу U₁':'Voltage across R₁, U₁','R₂-дегі кернеу U₂':'Voltage across R₂, U₂',
+'Нақты тәжірибеден кейін осы жолдарға құрал көрсеткіштерін енгізіңіз.':'After the experiment, enter instrument readings in these fields.',
+'Нақты зертханалық тәжірибеде кемінде 5 өлшеу жасаңыз.':'Take at least 5 measurements in the actual laboratory experiment.',
+'R₁, Ом':'R₁, Ω','R₂, Ом':'R₂, Ω','U, В':'U, V','I, А':'I, A','U₁, В':'U₁, V','U₂, В':'U₂, V',
+'Мән':'Value','Түрі':'Type','Белгіленуі':'Symbol','Құралды бассаңыз, атауы мен қызметі көрсетіледі.':'Click a component to see its name and function.',
+'Сары үзік сызық — өткізгіш бойымен қозғалып, токты тудыратын электр зарядтарының қозғалыс бағыты.':'The yellow dashed line indicates the direction of electric charges moving through the conductor to produce current.',
+'Тізбектей жалғанған екі резистордың жалпы кедергісін, ток күшін және кернеудің бөлінуін интерактивті модель арқылы зерттеу.':'Explore total resistance, current, and voltage distribution in two resistors connected in series using the interactive model.',
+'Ом':'Ω','В':'V','А':'A'
+});
+
+Object.assign(tr.ru, {'жалпы':'общ','теор':'теор','тәж':'эксп','тәуелсіз':'независимая','тәуелді':'зависимая','тұрақты':'постоянная','Құралдар және қондырғы сызбасы':'Приборы и схема установки','Нәтижелерді тіркеуге арналған кесте':'Таблица регистрации результатов','Rжалпы':'Rобщ','Iжалпы':'Iобщ','Uжалпы':'Uобщ'});
+Object.assign(tr.en, {'жалпы':'total','теор':'theor','тәж':'exp','тәуелсіз':'independent','тәуелді':'dependent','тұрақты':'constant','Құралдар және қондырғы сызбасы':'Equipment and circuit diagram','Нәтижелерді тіркеуге арналған кесте':'Results recording table','Rжалпы':'R_total','Iжалпы':'I_total','Uжалпы':'U_total'});
+const originalCompareReal=compareReal;
+compareReal=function(){
+ const lang=$('language').value;
+ if(lang==='kk'){originalCompareReal();return;}
+ const R1=Number(r1.value),R2=Number(r2.value),U=Number(voltage.value),Rt=R1+R2,I=U/Rt,U1=I*R1,U2=I*R2;
+ const vals=[['I',Number($('realI').value),I,lang==='en'?'A':'А'],['U₁',Number($('realU1').value),U1,lang==='en'?'V':'В'],['U₂',Number($('realU2').value),U2,lang==='en'?'V':'В'],[lang==='en'?'R_exp':'Rэксп',Number($('realR').value),Rt,lang==='en'?'Ω':'Ом']];
+ const entered=vals.filter(v=>Number.isFinite(v[1])&&v[1]!==0);
+ if(!entered.length){$('comparison').textContent=lang==='en'?'Enter measured values to automatically compare them with the model.':'Введите измеренные значения, чтобы автоматически сравнить их с моделью.';return;}
+ $('comparison').innerHTML=entered.map(v=>{const pct=v[2]!==0?Math.abs(v[1]-v[2])/v[2]*100:0;return `<b>${v[0]}</b>: ${lang==='en'?'measured':'измерено'} ${v[1]} ${v[3]}, ${lang==='en'?'model':'модель'} ${fmt(v[2],v[0]==='I'?3:2)} ${v[3]} → ${lang==='en'?'difference':'разница'} ${fmt(pct,2)}%`;}).join('<br>');
+};
+// Keep original text and attributes so switching languages repeatedly never compounds translations.
+const originalAttrs = new WeakMap();
+function localizeAttributes(lang){
+ const attrs=['placeholder','aria-label','title'];
+ document.querySelectorAll('input,textarea,button,select,label,svg').forEach(el=>attrs.forEach(attr=>{
+  if(!el.hasAttribute(attr))return;
+  if(!originalAttrs.has(el))originalAttrs.set(el,{});
+  const store=originalAttrs.get(el); if(store[attr]===undefined)store[attr]=el.getAttribute(attr);
+  const base=store[attr]; el.setAttribute(attr, lang==='kk'?base:((tr[lang]||{})[base]||base));
+ }));
+}
+const oldSetLanguage=setLanguage;
+setLanguage=function(lang){
+ oldSetLanguage(lang);
+ localizeAttributes(lang);
+ // Translate dynamic canvas labels and regenerate the graph using the selected locale.
+ if(typeof calculate==='function')calculate();
+ document.querySelectorAll('#dataRows th').forEach(th=>{
+   if(!th.dataset.baseText)th.dataset.baseText=th.textContent;
+   const base=th.dataset.baseText;
+   const suffix=lang==='ru'?{'Ом':'Ом','В':'В','А':'А'}:lang==='en'?{'Ом':'Ω','В':'V','А':'A'}:{};
+   let text=base;
+   if(lang==='en')text=text.replace('Rтеор','Rtheor').replace('Rтәж','Rexp').replace('Ом','Ω').replace('В','V').replace('А','A');
+   else if(lang==='ru')text=text.replace('Rтеор','Rтеор').replace('Rтәж','Rэксп');
+   th.textContent=text;
+ });
+};
+// Localize the model's dynamic output and graph annotations, too.
+const oldCalculate=calculate;
+calculate=function(){
+ oldCalculate();
+ const lang=$('language').value;
+ const unitR=lang==='en'?' Ω':' Ом', unitV=lang==='en'?' V':' В', unitI=lang==='en'?' A':' А';
+ ['rTotal','mR'].forEach(id=>$(id).textContent=fmt(Number(id==='rTotal'?r1.value:r1.value)+Number(r2.value))+(lang==='en'?' Ω':' Ом'));
+ ['current','mI','mI1','mI2'].forEach(id=>$(id).textContent=fmt(Number(voltage.value)/(Number(r1.value)+Number(r2.value)),3)+unitI);
+ const u1v=Number(voltage.value)*Number(r1.value)/(Number(r1.value)+Number(r2.value));
+ const u2v=Number(voltage.value)*Number(r2.value)/(Number(r1.value)+Number(r2.value));
+ ['u1','mU1'].forEach(id=>$(id).textContent=fmt(u1v)+unitV);['u2','mU2'].forEach(id=>$(id).textContent=fmt(u2v)+unitV);
+ $('svgI').textContent='I = '+fmt(Number(voltage.value)/(Number(r1.value)+Number(r2.value)),3)+unitI;
+ $('svgU1').textContent='U₁ = '+fmt(u1v)+unitV;$('svgU2').textContent='U₂ = '+fmt(u2v)+unitV;
+ $('calcR').parentElement.lastChild.textContent=lang==='en'?' Ω':' Ом';
+};
+// Dynamic circuit-builder messages follow the selected language.
+const partsI18n={
+ battery:{ru:['Источник питания','Подаёт электрическую энергию в цепь.'],en:['Power source','Supplies electrical energy to the circuit.']},
+ switch:{ru:['Выключатель','Замыкает или размыкает цепь.'],en:['Switch','Opens or closes the circuit.']},
+ ammeter:{ru:['Амперметр','Измеряет силу тока; подключается последовательно.'],en:['Ammeter','Measures current; connected in series.']},
+ r1:{ru:['Резистор R₁','Оказывает сопротивление току; измеряется падение напряжения U₁.'],en:['Resistor R₁','Resists current; voltage drop U₁ is measured.']},
+ r2:{ru:['Резистор R₂','Оказывает сопротивление току; измеряется падение напряжения U₂.'],en:['Resistor R₂','Resists current; voltage drop U₂ is measured.']},
+ voltmeter:{ru:['Вольтметр','Измеряет напряжение; подключается параллельно резистору.'],en:['Voltmeter','Measures voltage; connected in parallel with a resistor.']},
+ wire:{ru:['Соединительный провод','Электрически соединяет приборы.'],en:['Connecting wire','Electrically connects the components.']}
+};
+const originalRenderParts=renderParts;
+renderParts=function(){
+ const lang=$('language').value;
+ if(lang==='kk'){originalRenderParts();return;}
+ const wrap=$('builtParts');wrap.innerHTML='';
+ if(!circuit.length){wrap.textContent=lang==='ru'?'Выберите приборы выше.':'Select components above.';return;}
+ circuit.forEach((k,i)=>{const item=(partsI18n[k]||{})[lang]||parts[k];const d=document.createElement('button');d.className='built-part';d.type='button';d.innerHTML='<b>'+item[0]+'</b><small>'+(i+1)+(lang==='ru'?' — прибор · нажмите для информации':' — component · click for details')+'</small>';d.addEventListener('click',()=>{$('partInfo').textContent=item[0]+': '+item[1]});wrap.appendChild(d);if(i<circuit.length-1){const arrow=document.createElement('span');arrow.textContent='→';arrow.style.color='#facc15';wrap.appendChild(arrow)}});
+};
+// Student submission: validate identity, then freeze all work inputs and persist the lock in this browser.
+function applyWorkLock(){
+ document.body.classList.add('work-locked');
+ document.querySelectorAll('input,textarea,button').forEach(el=>{if(!['language','themeChoice','largeText','startOver'].includes(el.id))el.disabled=true;});
+ $('saveStatus').textContent=tr[$('language').value]?.['Жұмыс сақталды. Енді өзгерістер енгізу мүмкін емес.']||'Жұмыс сақталды. Енді өзгерістер енгізу мүмкін емес.';
+}
+$('saveWork').addEventListener('click',()=>{
+ const name=$('studentName').value.trim(), cls=$('studentClass').value.trim();
+ if(!name||!cls){$('saveStatus').textContent=tr[$('language').value]?.['Сақтау үшін ФИО мен сыныпты толтырыңыз.']||'Сақтау үшін ФИО мен сыныпты толтырыңыз.';return;}
+ const record={name,cls,conclusion:$('studentConclusion').value,table:[...document.querySelectorAll('#dataRows tr')].map(row=>[...row.querySelectorAll('input')].map(i=>i.value)),savedAt:new Date().toISOString()};
+ try{localStorage.setItem('seriesLabWorkSubmission',JSON.stringify(record));}catch(e){}
+ applyWorkLock();
+});
+try{if(localStorage.getItem('seriesLabWorkSubmission'))applyWorkLock();}catch(e){}
+// Restore a saved submission if this same browser is reopened.
+try{const saved=JSON.parse(localStorage.getItem('seriesLabWorkSubmission')||'null');if(saved){$('studentName').value=saved.name||'';$('studentClass').value=saved.cls||'';$('studentConclusion').value=saved.conclusion||'';const rows=[...document.querySelectorAll('#dataRows tr')];(saved.table||[]).forEach((values,i)=>{if(rows[i])[...rows[i].querySelectorAll('input')].forEach((inp,j)=>inp.value=values[j]||'')});applyWorkLock();}}catch(e){}
+
+// Allow the student to explicitly clear a submitted attempt and begin a fresh one.
+$('startOver').addEventListener('click',()=>{
+ if(!window.confirm(({kk:'Жұмысты толық тазалап, қайта бастағыңыз келе ме? Барлық енгізілген жауаптар өшіріледі.',ru:'Очистить работу и начать заново? Все введённые ответы будут удалены.',en:'Clear this work and start over? All entered answers will be deleted.'})[$('language').value]||'Start over?')) return;
+ try{localStorage.removeItem('seriesLabWorkSubmission');sessionStorage.removeItem('seriesLabLangRestore');}catch(e){}
+ document.body.classList.remove('work-locked');
+ document.querySelectorAll('input,textarea,button').forEach(el=>{if(!['language','themeChoice','largeText','startOver'].includes(el.id))el.disabled=false;});
+ document.querySelectorAll('input,textarea').forEach(el=>{
+   if(['language','themeChoice','largeText'].includes(el.id)) return;
+   if(el.type==='range') el.value=el.defaultValue;
+   else if(el.type==='checkbox'||el.type==='radio') el.checked=el.defaultChecked;
+   else el.value='';
+ });
+ $('studentName').value='';$('studentClass').value='';$('studentConclusion').value='';
+ document.querySelectorAll('#dataRows input').forEach(el=>el.value='');
+ circuit=[];renderParts();
+ $('partInfo').textContent=$('language').value==='ru'?'Нажмите на прибор, чтобы увидеть его название и назначение.':$('language').value==='en'?'Click a component to see its name and function.':'Құралды таңдағанда оның атауы мен қызметі осында шығады.';
+ delete $('partInfo').dataset.selected;
+ $('circuitFeedback').textContent=$('language').value==='ru'?'Соберите схему заново.':$('language').value==='en'?'Build the circuit again.':'Схеманы қайта құрастырыңыз.';
+ $('saveStatus').textContent='';
+ calculate();
+ window.scrollTo({top:0,behavior:'smooth'});
+});
+
+// Replace the old language listener so the entire interface and dynamic elements update together.
+$('language').onchange=e=>{setLanguage(e.target.value);renderParts();};
+setLanguage($('language').value);
+calculate();
+
+// Precision fixes for previously missed translations in formulas, tables and dynamic controls.
+const exactLocalization = {
+ ru: {
+  startOver:'Начать работу заново',
+  hypothesis: '<b>Если</b> сопротивления двух последовательно соединённых проводников и напряжение источника изменять, <b>то</b> сила тока во всех участках останется одинаковой, общее сопротивление будет равно сумме сопротивлений, а напряжение распределится пропорционально сопротивлениям, <b>поскольку</b> в последовательной цепи проходит один и тот же ток и действует закон Ома.',
+  goal: '<div class="highlight"><b>Цель:</b> исследовать общее сопротивление, силу тока и напряжение на каждом проводнике при последовательном соединении с помощью эксперимента и интерактивной модели.</div><h3>Задачи</h3><ol><li>Рассмотреть основные физические закономерности последовательного соединения проводников.</li><li>Изменять значения <span class="mono">R₁</span>, <span class="mono">R₂</span> и <span class="mono">U</span>, наблюдая за силой тока и напряжениями.</li><li>Рассчитать общее сопротивление по теоретической формуле и сравнить результат.</li><li>Сравнить прогноз модели со значениями, измеренными в эксперименте.</li><li>Построить график по полученным данным и сделать вывод.</li></ol>',
+  variables: '<tr><th>Величина</th><th>Тип</th><th>Обозначение</th></tr><tr><td>Сопротивление первого резистора</td><td>Независимая</td><td>R₁, Ом</td></tr><tr><td>Сопротивление второго резистора</td><td>Независимая</td><td>R₂, Ом</td></tr><tr><td>Напряжение источника</td><td>Независимая</td><td>U, В</td></tr><tr><td>Общее сопротивление</td><td>Зависимая</td><td>R<sub>общ</sub>, Ом</td></tr><tr><td>Сила тока</td><td>Зависимая</td><td>I, А</td></tr><tr><td>Напряжения на резисторах</td><td>Зависимая</td><td>U₁, U₂, В</td></tr><tr><td>Тип соединения</td><td>Постоянная</td><td>Последовательное</td></tr><tr><td>Тип проводников</td><td>Постоянная</td><td>Резисторы</td></tr>',
+  procedure: '<ol><li>Отключите источник питания и соберите цепь по схеме.</li><li>Подключите амперметр последовательно, а вольтметр — параллельно резистору, на котором измеряется напряжение.</li><li>Запишите номиналы <b>R₁</b>, <b>R₂</b> и напряжение источника <b>U</b>.</li><li>Включите цепь и измерьте амперметром силу тока <b>I</b>.</li><li>Измерьте напряжения <b>U₁</b> на первом и <b>U₂</b> на втором резисторе.</li><li>Повторите измерения как минимум для <b>5 разных наборов параметров</b>.</li><li>Указывайте единицы всех величин: Ом, В, А.</li><li>Рассчитайте теоретическое общее сопротивление по формуле <b>R<sub>общ</sub> = R₁ + R₂</b>.</li><li>Рассчитайте экспериментальное общее сопротивление по формуле <b>R<sub>эксп</sub> = U / I</b>.</li><li>Сравните прогноз модели с экспериментальными измерениями.</li></ol><div class="warning"><b>Важно:</b> интерактивная модель не заменяет реальную электрическую цепь. Она рассчитывает теоретический прогноз. Реальные экспериментальные значения нужно отдельно измерить приборами и внести в таблицу.</div>',
+  compareTitle:'10. «Прогноз модели» и «значение, измеренное в эксперименте»', modelTitle:'🖥️ Прогноз модели', realTitle:'🔬 Значение, измеренное в эксперименте', measured:'Измеренное значение',
+  tableTitle:'Таблица для регистрации результатов', tableNote:'В реальном лабораторном опыте выполните не менее 5 измерений.',
+  equipIntro:'Выберите нужный прибор, затем нажмите на рабочую область ниже, чтобы добавить его. Нажмите на прибор, чтобы увидеть его название и назначение.',
+  palette:['Источник питания','Выключатель','Амперметр','Резистор R₁','Резистор R₂','Вольтметр','Соединительный провод'],
+  builderTitle:'Рабочая область сборки схемы', emptyParts:'Выберите приборы выше.', partHint:'При выборе прибора здесь появятся его название и назначение.', check:'Проверить схему', reset:'Начать заново', circuitTitle:'Пример схемы',
+  partNames:{battery:['Источник питания','Подаёт электрическую энергию в цепь.'],switch:['Выключатель','Замыкает или размыкает цепь.'],ammeter:['Амперметр','Измеряет силу тока; подключается последовательно.'],r1:['Резистор R₁','Оказывает сопротивление току; измеряется падение напряжения U₁.'],r2:['Резистор R₂','Оказывает сопротивление току; измеряется падение напряжения U₂.'],voltmeter:['Вольтметр','Измеряет напряжение; подключается параллельно резистору.'],wire:['Соединительный провод','Электрически соединяет приборы.']},
+  resetMsg:'Схема очищена. Выберите приборы заново.', correct:'✓ Основная цепь собрана!', wrong:'Пока схема собрана неправильно.', path:'Путь тока: источник питания → выключатель → амперметр → R₁ → R₂ → источник питания.', meterCheck:' Проверьте, подключён ли вольтметр параллельно резистору.', meterAdd:' Примечание: добавьте вольтметр для измерения напряжения.', needParts:'Необходимы источник питания, выключатель, амперметр, R₁, R₂ и соединительный провод. Проверьте порядок элементов и параллельное подключение вольтметра.',
+  svgSource:'Источник питания', graphBlue:'Синяя линия — теоретическая модель', graphRed:'Красные точки и линия — экспериментальные значения из таблицы ученика'
+ },
+ en: {
+  startOver:'Start over',
+  hypothesis: '<b>If</b> the resistances of two series-connected conductors and the source voltage are changed, <b>then</b> current will remain the same throughout the circuit, total resistance will equal the sum of the resistances, and voltage will divide in proportion to resistance, <b>because</b> current is the same in a series circuit and Ohm’s law applies.',
+  goal: '<div class="highlight"><b>Aim:</b> investigate total resistance, current, and voltage across each conductor in a series circuit using an experiment and an interactive model.</div><h3>Objectives</h3><ol><li>Review the main physical laws of conductors connected in series.</li><li>Change <span class="mono">R₁</span>, <span class="mono">R₂</span>, and <span class="mono">U</span>, and observe current and voltages.</li><li>Calculate total resistance using the theoretical formula and compare the result.</li><li>Compare the model prediction with experimentally measured values.</li><li>Plot a graph from the collected data and draw a conclusion.</li></ol>',
+  variables: '<tr><th>Quantity</th><th>Type</th><th>Symbol</th></tr><tr><td>Resistance of resistor 1</td><td>Independent</td><td>R₁, Ω</td></tr><tr><td>Resistance of resistor 2</td><td>Independent</td><td>R₂, Ω</td></tr><tr><td>Source voltage</td><td>Independent</td><td>U, V</td></tr><tr><td>Total resistance</td><td>Dependent</td><td>R<sub>total</sub>, Ω</td></tr><tr><td>Current</td><td>Dependent</td><td>I, A</td></tr><tr><td>Voltages across resistors</td><td>Dependent</td><td>U₁, U₂, V</td></tr><tr><td>Connection type</td><td>Constant</td><td>Series</td></tr><tr><td>Conductor type</td><td>Constant</td><td>Resistors</td></tr>',
+  procedure: '<ol><li>Disconnect the power source and assemble the circuit according to the diagram.</li><li>Connect the ammeter in series and the voltmeter in parallel with the resistor being measured.</li><li>Record the ratings of <b>R₁</b>, <b>R₂</b>, and source voltage <b>U</b>.</li><li>Switch on the circuit and measure current <b>I</b> with the ammeter.</li><li>Measure voltage <b>U₁</b> across the first resistor and <b>U₂</b> across the second.</li><li>Repeat measurements for at least <b>5 different parameter sets</b>.</li><li>Include units for all quantities: Ω, V, A.</li><li>Calculate theoretical total resistance using <b>R<sub>total</sub> = R₁ + R₂</b>.</li><li>Calculate experimental total resistance using <b>R<sub>exp</sub> = U / I</b>.</li><li>Compare the model prediction with experimental measurements.</li></ol><div class="warning"><b>Important:</b> the interactive model does not replace a real circuit. It calculates theoretical predictions. Measure real experimental values with instruments and enter them separately in the table.</div>',
+  compareTitle:'10. “Model prediction” and “experimentally measured value”', modelTitle:'🖥️ Model prediction', realTitle:'🔬 Experimentally measured value', measured:'Measured value',
+  tableTitle:'Results recording table', tableNote:'Take at least 5 measurements in the actual laboratory experiment.',
+  equipIntro:'Select a component, then click the workspace below to add it. Click a component to view its name and function.',
+  palette:['Power source','Switch','Ammeter','Resistor R₁','Resistor R₂','Voltmeter','Connecting wire'],
+  builderTitle:'Circuit assembly area', emptyParts:'Select components above.', partHint:'The selected component’s name and function will appear here.', check:'Check circuit', reset:'Reset', circuitTitle:'Circuit example',
+  partNames:{battery:['Power source','Supplies electrical energy to the circuit.'],switch:['Switch','Opens or closes the circuit.'],ammeter:['Ammeter','Measures current; connected in series.'],r1:['Resistor R₁','Resists current; voltage drop U₁ is measured.'],r2:['Resistor R₂','Resists current; voltage drop U₂ is measured.'],voltmeter:['Voltmeter','Measures voltage; connected in parallel with a resistor.'],wire:['Connecting wire','Electrically connects the components.']},
+  resetMsg:'Circuit cleared. Select the components again.', correct:'✓ The main circuit is assembled!', wrong:'The circuit is not correct yet.', path:'Current path: power source → switch → ammeter → R₁ → R₂ → power source.', meterCheck:' Check that the voltmeter is connected in parallel with a resistor.', meterAdd:' Note: add a voltmeter to measure voltage.', needParts:'The circuit needs a power source, switch, ammeter, R₁, R₂, and connecting wire. Check the component order and connect the voltmeter in parallel.',
+  svgSource:'Power source', graphBlue:'Blue line — theoretical model', graphRed:'Red points and line — experimental values from the student table'
+ }
+};
+const baseSetLanguage=setLanguage;
+function applyExactLocalization(lang){
+ const t=exactLocalization[lang]; if(!t)return;
+ const byId=id=>document.getElementById(id);
+ byId('goal').querySelector('div.highlight').parentElement.innerHTML='<h2>2. '+(lang==='ru'?'Цель и задачи исследования':'Research aim and objectives')+'</h2>'+t.goal;
+ byId('hypothesis').querySelector('.success').innerHTML=t.hypothesis;
+ byId('variables').querySelector('table').innerHTML=t.variables;
+ byId('procedure').innerHTML='<h2>6. '+(lang==='ru'?'План проведения лабораторной работы':'Laboratory procedure')+'</h2>'+t.procedure;
+ byId('compare').querySelector('h2').textContent=t.compareTitle;
+ byId('compare').querySelector('.model h3').textContent=t.modelTitle;
+ byId('compare').querySelector('.real h3').textContent=t.realTitle;
+ byId('compare').querySelector('.real .small').textContent=lang==='ru'?'После эксперимента внесите в эти поля показания приборов.':'After the experiment, enter instrument readings in these fields.';
+ byId('compare').querySelectorAll('table tr:first-child th')[0].textContent=lang==='ru'?'Величина':'Quantity';
+ byId('compare').querySelectorAll('table tr:first-child th')[1].textContent=t.measured;
+ byId('table').querySelector('h2').textContent=t.tableTitle;
+ byId('table').querySelector('p.small').textContent=t.tableNote;
+ byId('setup').querySelector('p').textContent=t.equipIntro;
+ const labels=t.palette; document.querySelectorAll('#partPalette .part').forEach((b,i)=>{const symbol=b.querySelector('.symbol').outerHTML;b.innerHTML=symbol+labels[i]});
+ byId('setup').querySelector('.builder>b').textContent=t.builderTitle;
+ byId('checkCircuit').textContent=t.check;byId('resetCircuit').textContent=t.reset;byId('startOver').textContent=t.startOver;
+ byId('setup').querySelector('.card h3').textContent=t.circuitTitle;
+ byId('setup').querySelector('.built-parts').dataset.empty=t.emptyParts;
+ if(!circuit.length)byId('builtParts').textContent=t.emptyParts;
+ if(!byId('partInfo').dataset.selected)byId('partInfo').textContent=t.partHint;
+ byId('modelSvg').querySelector('text[x="120"]').textContent=t.svgSource;
+ byId('results').querySelector('.graph-legend').innerHTML=`<span class="legend-blue">━━</span> ${t.graphBlue} &nbsp; <span class="legend-red">●</span> ${t.graphRed}`;
+ // Ensure table headings and units are localized, not only surrounding prose.
+ const ths=byId('dataRows').parentElement.querySelectorAll('thead th');
+ const headings=lang==='ru'?['№','R₁, Ом','R₂, Ом','U, В','I, А','U₁, В','U₂, В','Rтеор, Ом','Rэксп, Ом']:['No.','R₁, Ω','R₂, Ω','U, V','I, A','U₁, V','U₂, V','Rtheory, Ω','Rexp, Ω'];
+ ths.forEach((th,i)=>th.textContent=headings[i]||th.textContent);
+}
+const originalPartClickHandlers=[...document.querySelectorAll('#partPalette .part')];
+function showPartInfo(k){const lang=$('language').value;const t=exactLocalization[lang];if(lang==='kk'){$('partInfo').textContent=parts[k][0]+': '+parts[k][1];}else{const info=t.partNames[k];$('partInfo').textContent=info[0]+': '+info[1];}$('partInfo').dataset.selected='1';}
+document.querySelectorAll('#partPalette .part').forEach(b=>{b.addEventListener('click',()=>showPartInfo(b.dataset.part));});
+const priorSetLanguage=setLanguage;
+setLanguage=function(lang){priorSetLanguage(lang);if(lang==='kk'){try{const values={};document.querySelectorAll('input,textarea').forEach((el,i)=>values[i]=el.value);sessionStorage.setItem('seriesLabLangRestore',JSON.stringify({values,circuit}));}catch(e){}location.reload();return;}applyExactLocalization(lang);calculate();renderParts();};
+// Override dynamic component rendering and circuit feedback in the chosen language.
+renderParts=function(){const lang=$('language').value;if(lang==='kk'){const wrap=$('builtParts');wrap.innerHTML='';if(!circuit.length){wrap.textContent='Құралдарды жоғарыдан таңдаңыз.';return;}circuit.forEach((k,i)=>{const d=document.createElement('button');d.className='built-part';d.type='button';d.innerHTML='<b>'+parts[k][0]+'</b><small>'+(i+1)+'-құрал · басып ақпаратты ашу</small>';d.onclick=()=>showPartInfo(k);wrap.appendChild(d);if(i<circuit.length-1){const a=document.createElement('span');a.textContent='→';a.style.color='#facc15';wrap.appendChild(a)}});return;}const t=exactLocalization[lang],wrap=$('builtParts');wrap.innerHTML='';if(!circuit.length){wrap.textContent=t.emptyParts;return;}circuit.forEach((k,i)=>{const item=t.partNames[k],d=document.createElement('button');d.className='built-part';d.type='button';d.innerHTML='<b>'+item[0]+'</b><small>'+(i+1)+(lang==='ru'?' — прибор · нажмите для информации':' — component · click for details')+'</small>';d.onclick=()=>showPartInfo(k);wrap.appendChild(d);if(i<circuit.length-1){const a=document.createElement('span');a.textContent='→';a.style.color='#facc15';wrap.appendChild(a)}})};
+$('resetCircuit').addEventListener('click',()=>{const lang=$('language').value;if(lang==='kk')return;const t=exactLocalization[lang];circuit=[];renderParts();$('circuitFeedback').textContent=t.resetMsg;$('partInfo').textContent=t.partHint;delete $('partInfo').dataset.selected;});
+$('checkCircuit').addEventListener('click',()=>{const lang=$('language').value;if(lang==='kk')return;const t=exactLocalization[lang],has=k=>circuit.includes(k),ok=['battery','switch','ammeter','r1','r2','wire'].every(has);$('circuitFeedback').textContent=ok?t.correct+' '+t.path+(has('voltmeter')?t.meterCheck:t.meterAdd):t.wrong+' '+t.needParts;});
+try{const raw=sessionStorage.getItem('seriesLabLangRestore');if(raw){const saved=JSON.parse(raw);sessionStorage.removeItem('seriesLabLangRestore');document.querySelectorAll('input,textarea').forEach((el,i)=>{if(saved.values&&saved.values[i]!==undefined)el.value=saved.values[i]});if(Array.isArray(saved.circuit)){circuit=saved.circuit;renderParts();}}}catch(e){}
+
+</script>
+</body>
+</html>
